@@ -156,6 +156,7 @@ evcxr_jupyter --install
 
 Whether you're building specialized tools for physics simulations, bioinformatics pipelines, financial modeling, or any other scientific domain - RustLab provides the foundation, and we encourage you to build upon it.
 
+
 ## 🤝 Contributing
 
 RustLab embraces the AI-human partnership model. When contributing:
@@ -163,7 +164,6 @@ RustLab embraces the AI-human partnership model. When contributing:
 - Maintain consistent API design
 - Include comprehensive examples
 - Test with both traditional and AI-assisted development
-- Consider opening PRs for improvements that benefit the broader community
 
 ## 📄 License
 

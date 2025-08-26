@@ -66,7 +66,7 @@ cargo --version
 
 ```bash
 # Clone the main repository
-git clone https://github.com/your-org/rustlab-rs.git
+git clone https://github.com/CameronReed-42/rustlab-rs.git
 cd rustlab-rs
 
 # Verify the project structure

@@ -1,6 +1,6 @@
 # License
 
-**Copyright (c) 2024 Cameron Reed**
+**Copyright (c) 2025 Cameron Reed**
 
 RustLab was created as a learning project to explore AI-collaborative coding and Rust numerical computing. It is released under dual MIT/Apache-2.0 licensing with the hope that others will fork, improve, and build upon this work.
 
@@ -37,7 +37,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 ```
 MIT License
 
-Copyright (c) 2024 [Your Name]
+Copyright (c) 2025 [Cameron Reed]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -254,7 +254,7 @@ file or class name and description of purpose be included on the
 same "page" as the copyright notice for easier identification
 within third-party archives.
 
-Copyright 2024 [Your Name]
+Copyright 2025 [Cameron Reed]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
