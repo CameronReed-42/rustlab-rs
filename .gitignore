@@ -1,0 +1,14 @@
+/target
+Cargo.lock
+.claude
+rustlab-math/target
+rustlab-distributions/target
+rustlab-linearalgebra/target
+rustlab-numerical/target
+rustlab-stats/target
+rustlab-special/target
+rustlab-optimize/target
+rustlab-plotting/target
+**/target/
+**/.claude/
+

@@ -1,0 +1,37 @@
+[package]
+name = "rustlab-linearregression"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "High-performance linear regression library with math-first API design for RustLab"
+repository = "https://github.com/rustlab/rustlab-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["linear-regression", "machine-learning", "statistics", "rustlab", "scientific-computing"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+rustlab-math = { path = "../rustlab-math" }
+rustlab-stats = { path = "../rustlab-stats" }
+rustlab-linearalgebra = { path = "../rustlab-linearalgebra" }
+rustlab-distributions = { path = "../rustlab-distributions" }
+rayon = "1.10"
+num-complex = "0.4"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"], optional = true }
+rand = "0.8"
+rand_distr = "0.4"
+
+[dev-dependencies]
+approx = "0.5"
+criterion = "0.5"
+csv = "1.3"
+
+[features]
+default = []
+serde = ["dep:serde"]
+
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

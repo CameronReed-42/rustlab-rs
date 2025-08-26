@@ -1,0 +1,58 @@
+[package]
+name = "rustlab-numerical"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "Numerical methods for RustLab: interpolation, integration, differentiation, and root finding"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["numerical", "interpolation", "integration", "scientific-computing", "mathematics"]
+categories = ["algorithms", "mathematics", "science"]
+
+[dependencies]
+rustlab-math = { path = "../rustlab-math", version = "0.1.0" }
+faer = "0.22"
+faer-entity = "0.20.1"
+faer-traits = "0.22.1"
+num-traits = "0.2"
+num-complex = "0.4"
+thiserror = "1.0"
+libm = "0.2"
+
+[[example]]
+name = "interpolation"
+path = "examples/interpolation.rs"
+
+[[example]]
+name = "integration"
+path = "examples/integration.rs"
+
+[[example]]
+name = "differentiation"
+path = "examples/differentiation.rs"
+
+[[example]]
+name = "roots"
+path = "examples/roots.rs"
+
+
+
+[dev-dependencies]
+approx = "0.5"
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.0"
+
+[features]
+default = ["std", "rayon"]
+std = []
+rayon = ["dep:rayon"]
+
+[dependencies.rayon]
+version = "1.8"
+optional = true
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+opt-level = 3

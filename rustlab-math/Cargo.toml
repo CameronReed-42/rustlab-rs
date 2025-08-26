@@ -1,0 +1,24 @@
+[package]
+name = "rustlab-math"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "High-performance immediate operators for numerical computing"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["mathematics", "linear-algebra", "immediate", "faer", "numerical"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+faer = { version = "0.22", features = ["std", "rayon"] }
+faer-entity = "0.20.1"
+faer-traits = "0.22.1"
+num-traits = "0.2"
+num-complex = "0.4"
+thiserror = "1.0"
+rayon = "1.11"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+approx = "0.5"
+tempfile = "3.0"

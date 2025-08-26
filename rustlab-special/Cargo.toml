@@ -1,0 +1,22 @@
+[package]
+name = "rustlab-special"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "A high-precision special functions library for Rust, with optional rustlab-math integration."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+keywords = ["special-functions", "mathematics", "bessel", "gamma", "error-functions"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+rustlab-math = { path = "../rustlab-math", optional = true }
+
+[features]
+default = []
+bench = []
+integration = ["rustlab-math"]  # Enable rustlab-math integration for array/vector operations
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.0"

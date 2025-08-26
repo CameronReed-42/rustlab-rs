@@ -1,0 +1,12 @@
+[package]
+name = "rustlab-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["CameronReed-42"]
+
+[dependencies]
+rustlab-math = { path = "rustlab-math" }
+rustlab-linearalgebra = { path = "rustlab-linearalgebra" }
+rustlab-optimize = { path = "rustlab-optimize" }
+num-complex = "0.4"
+

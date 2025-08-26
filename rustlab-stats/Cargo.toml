@@ -1,0 +1,37 @@
+[package]
+name = "rustlab-stats"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "Advanced statistical analysis library for RustLab ecosystem"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+keywords = ["statistics", "data-science", "scientific-computing", "math"]
+categories = ["mathematics", "science"]
+
+[dependencies]
+# Core RustLab dependencies
+rustlab-math = { path = "../rustlab-math", version = "0.1.0" }
+rustlab-special = { path = "../rustlab-special", version = "0.1.0" }
+
+# Numerical traits
+num-traits = "0.2"
+num-complex = "0.4"
+
+# Optional parallelization
+rayon = { version = "1.10", optional = true }
+
+# Optional serialization
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[features]
+default = []
+parallel = ["rayon"]
+serde = ["dep:serde"]
+
+[dev-dependencies]
+approx = "0.5"
+
+[[bench]]
+name = "performance_comparison"
+harness = false

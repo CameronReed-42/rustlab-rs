@@ -1,0 +1,42 @@
+[package]
+name = "rustlab-optimize"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Team"]
+license = "MIT OR Apache-2.0"
+description = "Math-first optimization and curve fitting for scientific computing"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+keywords = ["optimization", "curve-fitting", "scientific-computing", "mathematics", "levenberg-marquardt"]
+categories = ["mathematics", "science", "algorithms"]
+readme = "README.md"
+
+[dependencies]
+rustlab-math = { path = "../rustlab-math", version = "0.1.0" }
+rustlab-linearalgebra = { path = "../rustlab-linearalgebra", version = "0.1.0" }
+thiserror = "1.0"
+fastrand = "2.0"
+
+[dev-dependencies]
+approx = "0.5"
+
+[features]
+default = []
+# TODO: Enable when rustlab-math supports these features
+# parallel = ["rustlab-math/parallel"]
+# simd = ["rustlab-math/simd"]
+
+[[example]]
+name = "quick_start"
+required-features = []
+
+[[example]]
+name = "exponential_fitting_demo"
+required-features = []
+
+[[example]]
+name = "parameter_fixing_showcase"
+required-features = []
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
