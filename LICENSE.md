@@ -1,6 +1,6 @@
 # License
 
-**Copyright (c) 2024 Cameron Reed**
+**Copyright (c) 2025 Cameron Reed**
 
 RustLab was created as a learning project to explore AI-collaborative coding and Rust numerical computing. It is released under dual MIT/Apache-2.0 licensing with the hope that others will fork, improve, and build upon this work.
 
