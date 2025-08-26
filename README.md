@@ -144,6 +144,18 @@ evcxr_jupyter --install
 3. **Reference**: Study crate-specific documentation
 4. **Build**: Create your own scientific computing workflows
 
+## 🍴 Forking and Development
+
+**Forking is encouraged!** RustLab is designed to be a foundation for further scientific computing development:
+
+- **Fork freely** to explore new directions in numerical computing
+- **Experiment** with different approaches to scientific algorithms
+- **Build domain-specific** extensions for your field of research
+- **Create specialized** versions optimized for your use cases
+- **Share improvements** back to the community when beneficial
+
+Whether you're building specialized tools for physics simulations, bioinformatics pipelines, financial modeling, or any other scientific domain - RustLab provides the foundation, and we encourage you to build upon it.
+
 ## 🤝 Contributing
 
 RustLab embraces the AI-human partnership model. When contributing:
@@ -151,6 +163,7 @@ RustLab embraces the AI-human partnership model. When contributing:
 - Maintain consistent API design
 - Include comprehensive examples
 - Test with both traditional and AI-assisted development
+- Consider opening PRs for improvements that benefit the broader community
 
 ## 📄 License
 
