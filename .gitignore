@@ -11,4 +11,5 @@ rustlab-optimize/target
 rustlab-plotting/target
 **/target/
 **/.claude/
+*.Identifier
 
