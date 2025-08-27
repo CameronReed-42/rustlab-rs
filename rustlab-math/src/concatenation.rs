@@ -453,7 +453,6 @@ impl VectorF64 {
         
         for i in 0..n {
             let start = i * chunk_size;
-            let end = start + chunk_size;
             
             let chunk = Col::from_fn(chunk_size, |j| {
                 unsafe { *self.inner.get_unchecked(start + j) }

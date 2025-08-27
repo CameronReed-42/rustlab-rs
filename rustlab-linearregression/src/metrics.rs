@@ -1,7 +1,6 @@
 //! Regression metrics with math-first design
 
 use rustlab_math::{VectorF64, BasicStatistics};
-use rustlab_math::functional::FunctionalReduce;
 
 /// Coefficient of determination R²
 /// 

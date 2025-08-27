@@ -55,9 +55,7 @@
 //! Automatic SIMD vectorization is applied for f64 arrays/vectors larger than 64 elements,
 //! providing significant performance improvements for large-scale scientific computing.
 
-use crate::{Array, Vector, ArrayF64, VectorF64};
-use faer_entity::Entity;
-use faer_traits::ComplexField;
+use crate::{ArrayF64, VectorF64};
 use std::ops::{Add, Sub, Mul, Div};
 
 /// SIMD threshold - use SIMD optimizations for arrays/vectors larger than this
@@ -71,8 +69,6 @@ impl Add<ArrayF64> for ArrayF64 {
     
     fn add(self, other: ArrayF64) -> ArrayF64 {
         assert_eq!(self.shape(), other.shape(), "Arrays must have the same shape for addition");
-        
-        let total_elements = self.nrows() * self.ncols();
         
         // For large arrays, faer's built-in SIMD is already optimal
         // For smaller arrays, use direct faer operations which are cache-friendly
@@ -545,7 +541,7 @@ impl Sub<f64> for &ArrayF64 {
 
 // ========== COMPLEX NUMBER ARITHMETIC OPERATORS ==========
 
-use crate::{ArrayC64, VectorC64, ArrayC32, VectorC32};
+use crate::{ArrayC64, VectorC64};
 use num_complex::Complex;
 
 // Complex Vector Addition

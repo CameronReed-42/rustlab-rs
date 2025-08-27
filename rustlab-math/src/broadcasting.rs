@@ -27,9 +27,8 @@
 //! - Compatible with [`Array`] and [`Vector`] core operations
 //! - Integrates with [`statistics`] for feature normalization patterns
 
-use crate::{Array, Vector, ArrayF64, VectorF64};
+use crate::{ArrayF64, VectorF64};
 use faer::Mat;
-use std::ops;
 
 /// Broadcasting rules for determining compatible shapes
 #[derive(Debug, Clone, PartialEq)]
@@ -63,16 +62,22 @@ pub enum BroadcastType {
 /// - `Div`: Element-wise division (A / B)
 #[derive(Clone, Copy)]
 pub enum BroadcastOp {
+    /// Element-wise addition
     Add,
+    /// Element-wise subtraction
     Sub,
+    /// Element-wise multiplication
     Mul,
+    /// Element-wise division
     Div,
 }
 
 /// Shape representation for broadcasting compatibility checks
 #[derive(Debug, Clone, PartialEq)]
 pub enum Shape {
+    /// 1D vector shape with length
     Vector(usize),
+    /// 2D matrix shape with (rows, columns)
     Matrix(usize, usize),
 }
 

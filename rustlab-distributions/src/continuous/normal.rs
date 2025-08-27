@@ -37,7 +37,7 @@
 use crate::error::{Result, DistributionError};
 use rustlab_special::error_functions::erf;
 use rand::Rng;
-use std::f64::consts::{PI, SQRT_2, TAU};
+use std::f64::consts::{SQRT_2, TAU};
 
 /// Normal (Gaussian) distribution N(μ, σ²)
 ///
@@ -93,6 +93,8 @@ pub struct Normal {
     pub mean: f64,
     /// Standard deviation parameter (σ > 0)
     pub std_dev: f64,
+    /// Cached parameters tuple for trait implementation
+    params: (f64, f64),
 }
 
 impl Normal {
@@ -150,12 +152,20 @@ impl Normal {
             return Err(DistributionError::invalid_parameter("Standard deviation must be positive and finite"));
         }
         
-        Ok(Normal { mean, std_dev })
+        Ok(Normal { 
+            mean, 
+            std_dev,
+            params: (mean, std_dev),
+        })
     }
     
     /// Create a standard normal distribution (μ=0, σ=1)
     pub fn standard() -> Self {
-        Normal { mean: 0.0, std_dev: 1.0 }
+        Normal { 
+            mean: 0.0, 
+            std_dev: 1.0,
+            params: (0.0, 1.0),
+        }
     }
     
     /// Get the mean parameter
@@ -234,19 +244,23 @@ impl Normal {
         unsafe {
             if HAS_SPARE {
                 HAS_SPARE = false;
-                return self.mean + self.std_dev * SPARE.unwrap();
+                return SPARE.unwrap(); // Already transformed
             }
             
             HAS_SPARE = true;
             let u1: f64 = rng.gen();
             let u2: f64 = rng.gen();
             
-            let magnitude = self.std_dev * (-2.0 * u1.ln()).sqrt();
-            let z0 = magnitude * (TAU * u2).cos();
-            let z1 = magnitude * (TAU * u2).sin();
+            let radius = (-2.0 * u1.ln()).sqrt();
+            let z0 = radius * (TAU * u2).cos();
+            let z1 = radius * (TAU * u2).sin();
             
-            SPARE = Some(z1);
-            self.mean + z0
+            // Transform to desired mean and std_dev
+            let sample0 = self.mean + self.std_dev * z0;
+            let sample1 = self.mean + self.std_dev * z1;
+            
+            SPARE = Some(sample1);
+            sample0
         }
     }
     
@@ -388,13 +402,7 @@ impl crate::Distribution for Normal {
     }
     
     fn params(&self) -> &Self::Params {
-        // Note: This is a bit awkward due to the trait design
-        // In practice, we'd store params as a field or use a different approach
-        unsafe {
-            static mut PARAMS: (f64, f64) = (0.0, 1.0);
-            PARAMS = (self.mean, self.std_dev);
-            &PARAMS
-        }
+        &self.params
     }
     
     fn mean(&self) -> f64 {
@@ -446,7 +454,7 @@ impl crate::Sampling for Normal {
 mod tests {
     use super::*;
     use approx::assert_abs_diff_eq;
-    use rand::thread_rng;
+    use rand::{thread_rng, SeedableRng};
     
     #[test]
     fn test_normal_creation() {
@@ -518,7 +526,7 @@ mod tests {
     #[test]
     fn test_sampling() {
         let normal = Normal::new(5.0, 2.0).unwrap();
-        let mut rng = thread_rng();
+        let mut rng = rand::rngs::StdRng::seed_from_u64(42); // Use deterministic seed
         
         // Sample many values and check if sample statistics are reasonable
         let samples = normal.sample_n(&mut rng, 10000);

@@ -12,11 +12,10 @@
 
 use faer::Mat;
 use faer::prelude::Solve;
-use rustlab_math::{Array, ArrayF64, ArrayF32, ArrayC64, ArrayC32};
+use rustlab_math::Array;
 use crate::{LinearAlgebraError, Result};
 use faer_entity::{Entity, ComplexField as FaerComplexField};
 use faer_traits::ComplexField;
-use num_complex::Complex;
 
 /// Essential linear algebra operations with mathematical notation for matrices
 /// 
@@ -195,6 +194,7 @@ impl<T: Entity + ComplexField + FaerComplexField> BasicLinearAlgebra<T> for Arra
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rustlab_math::ArrayF64;
     use approx::assert_relative_eq;
 
     #[test]

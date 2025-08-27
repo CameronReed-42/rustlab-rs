@@ -189,8 +189,6 @@
 use rustlab_math::{VectorF64, VectorF32, ArrayF64, ArrayF32, BasicStatistics};
 use rustlab_math::reductions::Axis;
 use crate::advanced::quantiles::Quantiles;
-use crate::advanced::descriptive::AdvancedDescriptive;
-use crate::{StatsError, Result};
 
 /// Trait for comprehensive data normalization and scaling operations
 ///
@@ -867,7 +865,7 @@ impl ArrayNormalization<f64> for ArrayF64 {
     type ArrayOutput = ArrayF64;
     type VectorOutput = VectorF64;
     
-    fn zscore_axis(&self, axis: Axis, ddof: Option<usize>) -> ArrayF64 {
+    fn zscore_axis(&self, axis: Axis, _ddof: Option<usize>) -> ArrayF64 {
         let (nrows, ncols) = (self.nrows(), self.ncols());
         let mut result_data = vec![0.0; nrows * ncols];
         

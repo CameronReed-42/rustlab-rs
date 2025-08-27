@@ -40,7 +40,7 @@
 use faer::{MatRef, ColRef};
 use faer_entity::Entity;
 use faer_traits::ComplexField;
-use std::ops::{Add, Sub, Mul, Div, BitXor, AddAssign, SubAssign, MulAssign, DivAssign};
+use std::ops::{Add, Sub, Mul, BitXor, AddAssign, SubAssign, MulAssign, DivAssign};
 use num_traits::Zero;
 use crate::{Array, Vector};
 
@@ -267,7 +267,7 @@ impl<T: Entity + ComplexField> Array<T> {
     /// let view = large_matrix.view();     // Zero-cost, instant
     /// let result = view ^ view;           // Mathematical operations
     /// ```
-    pub fn view(&self) -> ArrayView<T> {
+    pub fn view(&self) -> ArrayView<'_, T> {
         ArrayView {
             inner: self.inner.as_ref(),
         }
@@ -276,7 +276,7 @@ impl<T: Entity + ComplexField> Array<T> {
 
 impl<T: Entity + ComplexField> Vector<T> {
     /// Create a zero-copy view of this vector
-    pub fn view(&self) -> VectorView<T> {
+    pub fn view(&self) -> VectorView<'_, T> {
         VectorView {
             inner: self.inner.as_ref(),
         }

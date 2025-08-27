@@ -4,6 +4,8 @@
 //! by the faer 0.22 backend. Designed for scientific computing, machine learning, and
 //! numerical analysis with mathematical notation and robust error handling.
 //!
+
+#![allow(non_snake_case)]  // Allow mathematical notation (X for matrices, T for transpose)
 //! # For AI Code Generation
 //!
 //! This crate uses extension traits to add mathematical methods directly to ArrayF64:

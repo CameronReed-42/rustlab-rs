@@ -40,10 +40,10 @@
 //! - Compatible with [`Array`] and [`Vector`] mathematical operations
 //! - Integrates with [`broadcasting`] for sliced data normalization
 
-use crate::{Array, Vector, ArrayView, VectorView};
+use crate::{Array, Vector};
 use faer_entity::Entity;
 use faer_traits::ComplexField;
-use std::ops::{Range, RangeTo, RangeFrom, RangeFull, RangeInclusive, RangeToInclusive};
+use std::ops::{Range, RangeTo, RangeFrom, RangeFull};
 
 /// Trait for types that can be used as slice indices with AI-optimized documentation
 /// 
@@ -316,7 +316,7 @@ impl<T: Entity> Vector<T> {
     /// - [`slice_to`]: Slice from start to specified end
     /// - [`slice_from`]: Slice from specified start to end
     /// - [`Array::slice_2d`]: 2D matrix slicing
-    pub fn slice(&self, range: Range<usize>) -> Result<SlicedVectorView<T>, String> {
+    pub fn slice(&self, range: Range<usize>) -> Result<SlicedVectorView<'_, T>, String> {
         if let Some(data) = self.as_slice() {
             if range.start <= range.end && range.end <= data.len() {
                 Ok(SlicedVectorView::new(data, range.start, range.end - range.start))
@@ -329,7 +329,7 @@ impl<T: Entity> Vector<T> {
     }
     
     /// Slice the vector with a range (mutable)
-    pub fn slice_mut(&mut self, range: Range<usize>) -> Result<SlicedVectorViewMut<T>, String> {
+    pub fn slice_mut(&mut self, range: Range<usize>) -> Result<SlicedVectorViewMut<'_, T>, String> {
         let len = self.len();
         if let Some(data) = self.as_mut_slice() {
             if range.start <= range.end && range.end <= len {
@@ -361,12 +361,12 @@ impl<T: Entity> Vector<T> {
     /// let batch_size = 64;
     /// let first_batch = data.slice_to(batch_size.min(data.len())).unwrap();
     /// ```
-    pub fn slice_to(&self, end: usize) -> Result<SlicedVectorView<T>, String> {
+    pub fn slice_to(&self, end: usize) -> Result<SlicedVectorView<'_, T>, String> {
         self.slice(0..end)
     }
     
     /// Slice from start to end (mutable)
-    pub fn slice_to_mut(&mut self, end: usize) -> Result<SlicedVectorViewMut<T>, String> {
+    pub fn slice_to_mut(&mut self, end: usize) -> Result<SlicedVectorViewMut<'_, T>, String> {
         self.slice_mut(0..end)
     }
     
@@ -389,13 +389,13 @@ impl<T: Entity> Vector<T> {
     /// let skip_header = 1;
     /// let content = data.slice_from(skip_header).unwrap();
     /// ```
-    pub fn slice_from(&self, start: usize) -> Result<SlicedVectorView<T>, String> {
+    pub fn slice_from(&self, start: usize) -> Result<SlicedVectorView<'_, T>, String> {
         let len = self.len();
         self.slice(start..len)
     }
     
     /// Slice from start to the end of the vector (mutable)
-    pub fn slice_from_mut(&mut self, start: usize) -> Result<SlicedVectorViewMut<T>, String> {
+    pub fn slice_from_mut(&mut self, start: usize) -> Result<SlicedVectorViewMut<'_, T>, String> {
         let len = self.len();
         self.slice_mut(start..len)
     }
@@ -411,33 +411,33 @@ impl<T: Entity> Vector<T> {
 /// Trait for creating vector slices with different range types
 pub trait VectorSlicing<T: Entity> {
     /// Slice with a Range<usize>
-    fn slice_range(&self, range: Range<usize>) -> Result<SlicedVectorView<T>, String>;
+    fn slice_range(&self, range: Range<usize>) -> Result<SlicedVectorView<'_, T>, String>;
     
     /// Slice with a RangeFrom<usize> (start..)
-    fn slice_range_from(&self, range: RangeFrom<usize>) -> Result<SlicedVectorView<T>, String>;
+    fn slice_range_from(&self, range: RangeFrom<usize>) -> Result<SlicedVectorView<'_, T>, String>;
     
     /// Slice with a RangeTo<usize> (..end)
-    fn slice_range_to(&self, range: RangeTo<usize>) -> Result<SlicedVectorView<T>, String>;
+    fn slice_range_to(&self, range: RangeTo<usize>) -> Result<SlicedVectorView<'_, T>, String>;
     
     /// Slice with a RangeFull (..)
-    fn slice_range_full(&self, range: RangeFull) -> Result<SlicedVectorView<T>, String>;
+    fn slice_range_full(&self, range: RangeFull) -> Result<SlicedVectorView<'_, T>, String>;
 }
 
 impl<T: Entity> VectorSlicing<T> for Vector<T> {
-    fn slice_range(&self, range: Range<usize>) -> Result<SlicedVectorView<T>, String> {
+    fn slice_range(&self, range: Range<usize>) -> Result<SlicedVectorView<'_, T>, String> {
         self.slice(range)
     }
     
-    fn slice_range_from(&self, range: RangeFrom<usize>) -> Result<SlicedVectorView<T>, String> {
+    fn slice_range_from(&self, range: RangeFrom<usize>) -> Result<SlicedVectorView<'_, T>, String> {
         let len = self.len();
         self.slice(range.start..len)
     }
     
-    fn slice_range_to(&self, range: RangeTo<usize>) -> Result<SlicedVectorView<T>, String> {
+    fn slice_range_to(&self, range: RangeTo<usize>) -> Result<SlicedVectorView<'_, T>, String> {
         self.slice(0..range.end)
     }
     
-    fn slice_range_full(&self, _range: RangeFull) -> Result<SlicedVectorView<T>, String> {
+    fn slice_range_full(&self, _range: RangeFull) -> Result<SlicedVectorView<'_, T>, String> {
         let len = self.len();
         self.slice(0..len)
     }
@@ -756,7 +756,7 @@ impl<T: Entity> Array<T> {
     /// # See Also
     /// - [`slice_rows`]: Select specific rows (all columns)
     /// - [`slice_cols`]: Select specific columns (all rows)
-    pub fn slice_2d(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<T>, String> {
+    pub fn slice_2d(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         let (nrows, ncols) = self.shape();
         
         if row_range.start <= row_range.end && row_range.end <= nrows &&
@@ -769,7 +769,7 @@ impl<T: Entity> Array<T> {
     }
     
     /// Slice the array with row and column ranges (mutable)
-    pub fn slice_2d_mut(&mut self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayViewMut<T>, String> {
+    pub fn slice_2d_mut(&mut self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayViewMut<'_, T>, String> {
         let (nrows, ncols) = self.shape();
         
         if row_range.start <= row_range.end && row_range.end <= nrows &&
@@ -804,13 +804,13 @@ impl<T: Entity> Array<T> {
     /// let train_set = dataset.slice_rows(0..train_size).unwrap();
     /// let test_set = dataset.slice_rows(train_size..total_samples).unwrap();
     /// ```
-    pub fn slice_rows(&self, row_range: Range<usize>) -> Result<SlicedArrayView<T>, String> {
+    pub fn slice_rows(&self, row_range: Range<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         let ncols = self.ncols();
         self.slice_2d(row_range, 0..ncols)
     }
     
     /// Slice specific rows (all columns, mutable)
-    pub fn slice_rows_mut(&mut self, row_range: Range<usize>) -> Result<SlicedArrayViewMut<T>, String> {
+    pub fn slice_rows_mut(&mut self, row_range: Range<usize>) -> Result<SlicedArrayViewMut<'_, T>, String> {
         let ncols = self.ncols();
         self.slice_2d_mut(row_range, 0..ncols)
     }
@@ -838,13 +838,13 @@ impl<T: Entity> Array<T> {
     /// let k_best_features = 5;
     /// let reduced = data.slice_cols(0..k_best_features).unwrap();
     /// ```
-    pub fn slice_cols(&self, col_range: Range<usize>) -> Result<SlicedArrayView<T>, String> {
+    pub fn slice_cols(&self, col_range: Range<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         let nrows = self.nrows();
         self.slice_2d(0..nrows, col_range)
     }
     
     /// Slice specific columns (all rows, mutable)
-    pub fn slice_cols_mut(&mut self, col_range: Range<usize>) -> Result<SlicedArrayViewMut<T>, String> {
+    pub fn slice_cols_mut(&mut self, col_range: Range<usize>) -> Result<SlicedArrayViewMut<'_, T>, String> {
         let nrows = self.nrows();
         self.slice_2d_mut(0..nrows, col_range)
     }
@@ -853,41 +853,41 @@ impl<T: Entity> Array<T> {
 /// Trait for creating array slices with different range types
 pub trait ArraySlicing<T: Entity> {
     /// Slice with two Range<usize> for rows and columns
-    fn slice_ranges(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<T>, String>;
+    fn slice_ranges(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<'_, T>, String>;
     
     /// Slice rows with RangeFrom (..)
-    fn slice_rows_from(&self, row_range: RangeFrom<usize>) -> Result<SlicedArrayView<T>, String>;
+    fn slice_rows_from(&self, row_range: RangeFrom<usize>) -> Result<SlicedArrayView<'_, T>, String>;
     
     /// Slice rows with RangeTo (..)
-    fn slice_rows_to(&self, row_range: RangeTo<usize>) -> Result<SlicedArrayView<T>, String>;
+    fn slice_rows_to(&self, row_range: RangeTo<usize>) -> Result<SlicedArrayView<'_, T>, String>;
     
     /// Slice columns with RangeFrom (..)
-    fn slice_cols_from(&self, col_range: RangeFrom<usize>) -> Result<SlicedArrayView<T>, String>;
+    fn slice_cols_from(&self, col_range: RangeFrom<usize>) -> Result<SlicedArrayView<'_, T>, String>;
     
     /// Slice columns with RangeTo (..)
-    fn slice_cols_to(&self, col_range: RangeTo<usize>) -> Result<SlicedArrayView<T>, String>;
+    fn slice_cols_to(&self, col_range: RangeTo<usize>) -> Result<SlicedArrayView<'_, T>, String>;
 }
 
 impl<T: Entity> ArraySlicing<T> for Array<T> {
-    fn slice_ranges(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<T>, String> {
+    fn slice_ranges(&self, row_range: Range<usize>, col_range: Range<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         self.slice_2d(row_range, col_range)
     }
     
-    fn slice_rows_from(&self, row_range: RangeFrom<usize>) -> Result<SlicedArrayView<T>, String> {
+    fn slice_rows_from(&self, row_range: RangeFrom<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         let nrows = self.nrows();
         self.slice_rows(row_range.start..nrows)
     }
     
-    fn slice_rows_to(&self, row_range: RangeTo<usize>) -> Result<SlicedArrayView<T>, String> {
+    fn slice_rows_to(&self, row_range: RangeTo<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         self.slice_rows(0..row_range.end)
     }
     
-    fn slice_cols_from(&self, col_range: RangeFrom<usize>) -> Result<SlicedArrayView<T>, String> {
+    fn slice_cols_from(&self, col_range: RangeFrom<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         let ncols = self.ncols();
         self.slice_cols(col_range.start..ncols)
     }
     
-    fn slice_cols_to(&self, col_range: RangeTo<usize>) -> Result<SlicedArrayView<T>, String> {
+    fn slice_cols_to(&self, col_range: RangeTo<usize>) -> Result<SlicedArrayView<'_, T>, String> {
         self.slice_cols(0..col_range.end)
     }
 }

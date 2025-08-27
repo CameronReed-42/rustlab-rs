@@ -17,6 +17,7 @@ pub struct LogisticRegression {
 }
 
 impl LogisticRegression {
+    /// Create a new logistic regression instance
     pub fn new() -> Self {
         Self {
             max_iter: 100,
@@ -38,7 +39,7 @@ pub struct FittedLogistic {
 impl LinearModel for LogisticRegression {
     type Fitted = FittedLogistic;
     
-    fn fit(&self, X: &ArrayF64, y: &VectorF64) -> Result<Self::Fitted> {
+    fn fit(&self, X: &ArrayF64, _y: &VectorF64) -> Result<Self::Fitted> {
         // TODO: Implement Newton-Raphson or gradient descent
         let n_features = X.ncols();
         Ok(FittedLogistic {
@@ -56,7 +57,7 @@ impl FittedModel for FittedLogistic {
         VectorF64::fill(n_samples, 0.5)
     }
     
-    fn score(&self, X: &ArrayF64, y: &VectorF64) -> f64 {
+    fn score(&self, _X: &ArrayF64, _y: &VectorF64) -> f64 {
         // Returns accuracy for classification
         0.5
     }

@@ -360,6 +360,8 @@ pub struct Binomial {
     /// This is the probability that any individual trial results in success.
     /// All n trials share the same success probability.
     pub p: f64,
+    /// Cached parameters tuple for trait implementation
+    params: (u32, f64),
 }
 
 impl Binomial {
@@ -401,7 +403,11 @@ impl Binomial {
         if !p.is_finite() || p < 0.0 || p > 1.0 {
             return Err(DistributionError::invalid_parameter("Probability must be in [0, 1]"));
         }
-        Ok(Binomial { n, p })
+        Ok(Binomial { 
+            n, 
+            p,
+            params: (n, p),
+        })
     }
 }
 
@@ -414,13 +420,7 @@ impl Distribution for Binomial {
     }
     
     fn params(&self) -> &Self::Params {
-        // Note: This is a workaround since we can't return a reference to a tuple
-        // In a real implementation, you'd store params as a field
-        unsafe {
-            static mut PARAMS: (u32, f64) = (0, 0.0);
-            PARAMS = (self.n, self.p);
-            &PARAMS
-        }
+        &self.params
     }
     
     fn mean(&self) -> f64 {

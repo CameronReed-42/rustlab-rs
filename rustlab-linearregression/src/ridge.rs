@@ -26,7 +26,6 @@
 //! - Common α range: [0.01, 100]
 
 use rustlab_math::{ArrayF64, VectorF64, BasicStatistics};
-use rustlab_math::functional::FunctionalReduce;
 use rustlab_linearalgebra::{BasicLinearAlgebra, DecompositionMethods};
 use crate::error::{LinearRegressionError, Result};
 use crate::traits::{LinearModel, FittedModel, RegularizedModel};
@@ -629,7 +628,7 @@ impl FittedModel for FittedRidge {
         self.intercept
     }
     
-    fn predict_interval(&self, X: &ArrayF64, alpha: f64) -> Result<(VectorF64, VectorF64, VectorF64)> {
+    fn predict_interval(&self, X: &ArrayF64, _alpha: f64) -> Result<(VectorF64, VectorF64, VectorF64)> {
         // Simplified confidence intervals for Ridge
         // More complex than OLS due to bias-variance tradeoff
         let predictions = self.predict(X);

@@ -17,6 +17,7 @@ pub struct LassoRegression {
 }
 
 impl LassoRegression {
+    /// Create a new Lasso regression instance
     pub fn new(alpha: f64) -> Result<Self> {
         if alpha < 0.0 {
             return Err(LinearRegressionError::InvalidParameter {
@@ -46,7 +47,7 @@ pub struct FittedLasso {
 impl LinearModel for LassoRegression {
     type Fitted = FittedLasso;
     
-    fn fit(&self, X: &ArrayF64, y: &VectorF64) -> Result<Self::Fitted> {
+    fn fit(&self, X: &ArrayF64, _y: &VectorF64) -> Result<Self::Fitted> {
         // TODO: Implement coordinate descent for Lasso
         let n_features = X.ncols();
         Ok(FittedLasso {
@@ -63,7 +64,7 @@ impl FittedModel for FittedLasso {
         VectorF64::fill(n_samples, self.intercept.unwrap_or(0.0))
     }
     
-    fn score(&self, X: &ArrayF64, y: &VectorF64) -> f64 {
+    fn score(&self, _X: &ArrayF64, _y: &VectorF64) -> f64 {
         0.0
     }
     

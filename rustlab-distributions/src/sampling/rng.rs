@@ -109,6 +109,7 @@ use rand::rngs::{StdRng, ThreadRng};
 /// let pairs = seeded_wrapper.uniform_pairs(5);
 /// assert_eq!(pairs.len(), 5);
 /// ```
+#[derive(Debug)]
 pub struct RngWrapper<R: RngCore> {
     /// The underlying random number generator
     rng: R,
@@ -617,6 +618,7 @@ pub fn latin_hypercube_samples<R: Rng>(n: usize, d: usize, rng: &mut R) -> Vec<V
 /// ```
 ///
 /// The Sobol sequence typically converges faster, especially in moderate dimensions.
+#[derive(Debug)]
 pub struct SobolSequence {
     dimension: usize,
     count: usize,
@@ -782,6 +784,7 @@ impl SobolSequence {
 /// For production applications, use high-quality generators from the `rand`
 /// crate such as `StdRng`, `SmallRng`, or `ThreadRng` which provide much
 /// better statistical properties and performance.
+#[derive(Debug)]
 pub struct SimpleLCG {
     seed: u64,
 }
@@ -864,7 +867,7 @@ impl SimpleLCG {
     }
 }
 
-#[cfg(disabled_test)]
+#[cfg(test)]
 mod tests {
     use super::*;
     

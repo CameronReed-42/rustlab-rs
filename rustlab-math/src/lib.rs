@@ -4,6 +4,8 @@
 //! syntax with comprehensive AI code generation support. Built on faer for optimal
 //! performance and scientific computing workflows.
 //!
+
+#![allow(non_snake_case)]  // Allow mathematical notation (X for matrices, y for vectors)
 //! # CRITICAL for AI Code Generation
 //! 
 //! **Operator Distinction** (Most Important Rule):
@@ -123,6 +125,7 @@ pub mod statistics;
 pub mod io;
 pub mod comprehension;
 
+
 // Re-export main generic types
 pub use array::Array;
 pub use vector::Vector;
@@ -221,125 +224,3 @@ pub type DefaultArray = ArrayF64;
 /// Default 1D vector type (f64) for backward compatibility
 pub type DefaultVector = VectorF64;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use tempfile::NamedTempFile;
-    use crate::io::MathIO;
-
-    #[test]
-    fn test_array_basic_ops() {
-        let a = ArrayF64::zeros(2, 2);
-        let b = ArrayF64::ones(2, 2);
-        
-        // Test addition
-        let result = a + b;
-        assert_eq!(result.get(0, 0), Some(1.0));
-        assert_eq!(result.get(1, 1), Some(1.0));
-        
-        // Test scalar multiplication
-        let c = ArrayF64::ones(2, 2);
-        let result = c * 2.0;
-        assert_eq!(result.get(0, 0), Some(2.0));
-        assert_eq!(result.get(1, 1), Some(2.0));
-    }
-
-    #[test]
-    fn test_vector_basic_ops() {
-        let a = VectorF64::zeros(3);
-        let b = VectorF64::ones(3);
-        
-        // Test addition
-        let result = a + b;
-        assert_eq!(result.get(0), Some(1.0));
-        assert_eq!(result.get(2), Some(1.0));
-        
-        // Test scalar multiplication
-        let c = VectorF64::ones(3);
-        let result = c * 3.0;
-        assert_eq!(result.get(0), Some(3.0));
-        assert_eq!(result.get(2), Some(3.0));
-        
-        // Test dot product
-        let x = VectorF64::from_slice(&[1.0, 2.0, 3.0]);
-        let y = VectorF64::from_slice(&[4.0, 5.0, 6.0]);
-        let dot = x.dot(&y);
-        assert_eq!(dot, 32.0); // 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32
-    }
-
-    #[test]
-    fn test_chained_operations() {
-        // Test the immediate operator chaining like the example in the docs
-        let a = ArrayF64::zeros(2, 2);
-        let b = ArrayF64::ones(2, 2);
-        let result = a + b * 2.0;
-        assert_eq!(result.get(0, 0), Some(2.0));
-        assert_eq!(result.get(1, 1), Some(2.0));
-    }
-
-    #[test]
-    fn test_natural_slicing_basic() {
-        // Test basic natural slicing with Index trait
-        let vec = VectorF64::from_slice(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-        
-        // Range slicing
-        let slice = &vec[1..4];
-        assert_eq!(slice, &[2.0, 3.0, 4.0]);
-        
-        let tail = &vec[2..];
-        assert_eq!(tail, &[3.0, 4.0, 5.0]);
-        
-        let head = &vec[..3];
-        assert_eq!(head, &[1.0, 2.0, 3.0]);
-    }
-
-    #[test]
-    fn test_natural_slicing_advanced() {
-        // Test method-based ergonomic slicing
-        let vec = VectorF64::from_slice(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-        
-        // Range slicing  
-        let slice = vec.slice_at(1..4).unwrap();
-        assert_eq!(slice.len(), 3);
-        assert_eq!(slice[0], 2.0);
-        assert_eq!(slice[2], 4.0);
-        
-        // Negative indexing
-        let last = vec.at(-1);
-        assert_eq!(last, Some(5.0));
-        let second_last = vec.at(-2);
-        assert_eq!(second_last, Some(4.0));
-        
-        // Error handling
-        assert_eq!(vec.at(-10), None); // Out of bounds
-        assert_eq!(vec.at(10), None);  // Out of bounds
-    }
-
-    #[test]
-    fn test_io_module_integration() {
-        // Test basic I/O functionality with new consolidated API
-        let data = ArrayF64::from_slice(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], 2, 3).unwrap();
-        
-        // Create a temporary file for testing
-        let temp_file = NamedTempFile::new().unwrap();
-        
-        // Save using new MathIO trait
-        data.save(temp_file.path()).unwrap();
-        
-        // Load it back
-        let loaded = ArrayF64::load(temp_file.path()).unwrap();
-        
-        // Verify dimensions
-        assert_eq!(loaded.shape(), (2, 3));
-        
-        // Verify content
-        let original_vec = data.to_vec();
-        let loaded_vec = loaded.to_vec();
-        
-        for (orig, load) in original_vec.iter().zip(loaded_vec.iter()) {
-            assert!((orig - load).abs() < 1e-15, "Values should match exactly");
-        }
-        
-        println!("✓ I/O module integration test passed");
-    }
-}

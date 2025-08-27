@@ -402,6 +402,7 @@ pub fn spherical_hankel_2(n: u32, x: f64) -> (f64, f64) {
 /// Utility function to compute factorial for small non-negative integers.
 /// 
 /// For larger values, consider using the gamma function: n! = Γ(n+1)
+#[allow(dead_code)]
 #[inline]
 fn factorial(n: u32) -> f64 {
     match n {

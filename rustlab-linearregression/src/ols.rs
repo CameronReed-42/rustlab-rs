@@ -21,8 +21,7 @@
 //! - Common pattern: `LinearRegression::new().fit(&X, &y)?`
 
 use rustlab_math::{ArrayF64, VectorF64, BasicStatistics};
-use rustlab_math::functional::FunctionalReduce;
-use rustlab_linearalgebra::{DecompositionMethods, BasicLinearAlgebra};
+use rustlab_linearalgebra::BasicLinearAlgebra;
 use crate::error::{LinearRegressionError, Result};
 use crate::traits::{LinearModel, FittedModel};
 

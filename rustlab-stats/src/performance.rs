@@ -3,10 +3,10 @@
 //! This module provides performance-optimized versions of statistical operations,
 //! zero-copy algorithms, parallel implementations, and benchmarking utilities.
 
-use rustlab_math::{VectorF64, ArrayF64, BasicStatistics};
+use rustlab_math::{VectorF64, BasicStatistics};
 
-// Import Axis for all builds, not just parallel
-use rustlab_math::reductions::Axis;
+#[cfg(feature = "parallel")]
+use rustlab_math::{ArrayF64, reductions::Axis};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -87,6 +87,7 @@ pub mod simd {
         use std::arch::x86_64::*;
         
         #[target_feature(enable = "avx2")]
+        /// AVX2-optimized sum for f64 slices
         pub unsafe fn sum_f64_avx2(data: &[f64]) -> f64 {
             let mut sum = _mm256_setzero_pd();
             let chunks = data.chunks_exact(4);
@@ -111,6 +112,7 @@ pub mod simd {
         }
         
         #[target_feature(enable = "sse2")]
+        /// SSE2-optimized sum for f64 slices
         pub unsafe fn sum_f64_sse2(data: &[f64]) -> f64 {
             let mut sum = _mm_setzero_pd();
             let chunks = data.chunks_exact(2);
@@ -130,6 +132,7 @@ pub mod simd {
         }
         
         #[target_feature(enable = "avx2")]
+        /// AVX2-optimized dot product for f64 slices
         pub unsafe fn dot_product_f64_avx2(a: &[f64], b: &[f64]) -> f64 {
             let mut sum = _mm256_setzero_pd();
             let len = a.len().min(b.len());
@@ -159,6 +162,7 @@ pub mod simd {
         }
         
         #[target_feature(enable = "sse2")]
+        /// SSE2-optimized dot product for f64 slices
         pub unsafe fn dot_product_f64_sse2(a: &[f64], b: &[f64]) -> f64 {
             let mut sum = _mm_setzero_pd();
             let len = a.len().min(b.len());
@@ -183,6 +187,7 @@ pub mod simd {
         }
         
         #[target_feature(enable = "avx2")]
+        /// AVX2-optimized variance calculation for f64 slices
         pub unsafe fn variance_f64_avx2(data: &[f64], mean: f64) -> f64 {
             let mean_vec = _mm256_set1_pd(mean);
             let mut sum = _mm256_setzero_pd();
@@ -210,6 +215,7 @@ pub mod simd {
         }
         
         #[target_feature(enable = "sse2")]
+        /// SSE2-optimized variance calculation for f64 slices
         pub unsafe fn variance_f64_sse2(data: &[f64], mean: f64) -> f64 {
             let mean_vec = _mm_set1_pd(mean);
             let mut sum = _mm_setzero_pd();
@@ -953,13 +959,18 @@ pub mod benchmarks {
     /// Benchmark result containing timing information
     #[derive(Debug, Clone)]
     pub struct BenchmarkResult {
+        /// Name of the benchmarked operation
         pub name: String,
+        /// Duration taken for the operation
         pub duration: Duration,
+        /// Operations performed per second
         pub operations_per_second: f64,
+        /// Size of the data processed
         pub data_size: usize,
     }
     
     impl BenchmarkResult {
+        /// Create a new benchmark result
         pub fn new(name: String, duration: Duration, data_size: usize) -> Self {
             let ops_per_sec = if duration.as_secs_f64() > 0.0 {
                 data_size as f64 / duration.as_secs_f64()

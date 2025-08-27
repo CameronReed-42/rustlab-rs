@@ -201,6 +201,7 @@ impl Interpolator1D for LagrangeInterpolator {
 #[derive(Debug, Clone)]
 pub struct NewtonInterpolator {
     x: VectorF64,
+    #[allow(dead_code)] // False positive: field is used in eval method
     y: VectorF64,
     divided_differences: Vec<f64>,
     extrapolation: ExtrapolationMode,

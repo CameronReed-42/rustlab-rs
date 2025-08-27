@@ -1,8 +1,7 @@
 //! Minimal faer 0.22 linear algebra implementation
 
-use crate::{Array, Vector, LinearAlgebraError, Result};
-use faer::{Mat, Col};
-use rustlab_math::{ArrayF64, array64};
+use crate::{LinearAlgebraError, Result};
+use rustlab_math::ArrayF64;
 
 /// Basic LU decomposition using faer 0.22 API
 pub fn simple_lu_decompose(matrix: &ArrayF64) -> Result<()> {
@@ -38,6 +37,7 @@ impl MinimalLinearAlgebra for ArrayF64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rustlab_math::array64;
     use approx::assert_relative_eq;
     
     #[test]

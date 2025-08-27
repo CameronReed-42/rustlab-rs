@@ -58,7 +58,7 @@
 
 use crate::{VectorF64, ArrayF64, BooleanVector};
 use crate::ergonomic_slicing::IntoSliceIndex;
-use std::ops::{Index, Range, RangeFrom, RangeTo, RangeFull};
+use std::ops::{Range, RangeFrom, RangeTo, RangeFull};
 
 // ============================================================================
 // VectorF64 Index Implementations
@@ -137,6 +137,7 @@ impl VectorF64 {
 pub struct SliceableVector<'a>(&'a VectorF64);
 
 impl<'a> SliceableVector<'a> {
+    /// Create a new sliceable vector wrapper
     pub fn new(vec: &'a VectorF64) -> Self {
         SliceableVector(vec)
     }
@@ -151,7 +152,7 @@ impl VectorF64 {
     /// let slice = vec.s()[1..4].unwrap();  // [2.0, 3.0, 4.0]
     /// let last = vec.s()[-1].unwrap();     // 5.0 (last element)
     /// ```
-    pub fn s(&self) -> SliceableVector {
+    pub fn s(&self) -> SliceableVector<'_> {
         SliceableVector::new(self)
     }
 }
@@ -212,6 +213,7 @@ impl<'a> SliceableVector<'a> {
 pub struct SliceableArray<'a>(&'a ArrayF64);
 
 impl<'a> SliceableArray<'a> {
+    /// Create a new sliceable array wrapper
     pub fn new(array: &'a ArrayF64) -> Self {
         SliceableArray(array)
     }
@@ -226,7 +228,7 @@ impl ArrayF64 {
     /// let sub = arr.s()[(1..3, 0..2)].unwrap();    // [[4, 5], [7, 8]]
     /// let row = arr.s()[(1, ..)].unwrap();         // [4, 5, 6] (entire row 1)
     /// ```
-    pub fn s(&self) -> SliceableArray {
+    pub fn s(&self) -> SliceableArray<'_> {
         SliceableArray::new(self)
     }
 }

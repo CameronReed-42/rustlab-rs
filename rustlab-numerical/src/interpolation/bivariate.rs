@@ -4,7 +4,7 @@
 //! - Bilinear interpolation
 //! - Bicubic interpolation
 
-use rustlab_math::{vec64, VectorF64, ArrayF64};
+use rustlab_math::{VectorF64, ArrayF64};
 use crate::{Result, NumericalError};
 use super::traits::{Interpolator2D, ExtrapolationMode};
 
@@ -33,8 +33,8 @@ impl BilinearInterpolator {
     /// use rustlab_core::{vec, rmat};
     /// use rustlab_numerical::interpolation::{BilinearInterpolator, Interpolator2D};
     /// 
-    /// let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-    /// let y = vec64::from_slice(&[0.0, 1.0]);
+    /// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+    /// let y = VectorF64::from_slice(&[0.0, 1.0]);
     /// let z = ArrayF64::from_vec2d(vec![
     ///     vec![1.0, 2.0],
     ///     vec![3.0, 4.0],
@@ -285,8 +285,8 @@ impl BicubicInterpolator {
     /// use rustlab_core::{vec, rmat};
     /// use rustlab_numerical::interpolation::{BicubicInterpolator, Interpolator2D};
     /// 
-    /// let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-    /// let y = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+    /// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+    /// let y = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
     /// let z = ArrayF64::from_vec2d(vec![
     ///     vec![1.0, 2.0, 3.0, 4.0],
     ///     vec![2.0, 3.0, 4.0, 5.0],
@@ -510,8 +510,8 @@ impl Interpolator2D for BicubicInterpolator {
 /// use rustlab_core::{vec, rmat};
 /// use rustlab_numerical::interpolation::interp2d_bilinear;
 /// 
-/// let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-/// let y = vec64::from_slice(&[0.0, 1.0]);
+/// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+/// let y = VectorF64::from_slice(&[0.0, 1.0]);
 /// let z = ArrayF64::from_vec2d(vec![
 ///     vec![1.0, 2.0],
 ///     vec![3.0, 4.0],
@@ -533,8 +533,8 @@ pub fn interp2d_bilinear(x: &VectorF64, y: &VectorF64, z: &ArrayF64, xi: f64, yi
 /// use rustlab_core::{vec, rmat};
 /// use rustlab_numerical::interpolation::interp2d_bicubic;
 /// 
-/// let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-/// let y = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+/// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+/// let y = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
 /// let z = ArrayF64::from_vec2d(vec![
 ///     vec![1.0, 2.0, 3.0, 4.0],
 ///     vec![2.0, 3.0, 4.0, 5.0],
@@ -553,18 +553,15 @@ pub fn interp2d_bicubic(x: &VectorF64, y: &VectorF64, z: &ArrayF64, xi: f64, yi:
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustlab_math::{vec64, VectorF64, ArrayF64};
+    use rustlab_math::{vec64, VectorF64, ArrayF64, array64};
     use approx::assert_relative_eq;
     
     #[test]
     fn test_bilinear_basic() {
         // Simple 2x2 grid
-        let x = vec64::from_slice(&[0.0, 1.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
-        let z = ArrayF64::from_vec2d(vec![
-            vec![1.0, 2.0],
-            vec![3.0, 4.0]
-        ]).unwrap();
+        let x = VectorF64::from_slice(&[0.0, 1.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
+        let z = array64![[1.0, 2.0], [3.0, 4.0]];
         
         let interp = BilinearInterpolator::new(x, y, z).unwrap();
         
@@ -580,13 +577,9 @@ mod tests {
     
     #[test]
     fn test_bilinear_larger_grid() {
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
-        let z = ArrayF64::from_vec2d(vec![
-            vec![1.0, 2.0],
-            vec![3.0, 4.0],
-            vec![5.0, 6.0]
-        ]).unwrap();
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
+        let z = array64![[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]];
         
         let interp = BilinearInterpolator::new(x, y, z).unwrap();
         
@@ -600,14 +593,9 @@ mod tests {
     #[test]
     fn test_bicubic_basic() {
         // 4x4 grid for bicubic
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let z = ArrayF64::from_vec2d(vec![
-            vec![1.0, 2.0, 3.0, 4.0],
-            vec![2.0, 3.0, 4.0, 5.0],
-            vec![3.0, 4.0, 5.0, 6.0],
-            vec![4.0, 5.0, 6.0, 7.0]
-        ]).unwrap();
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let z = array64![[1.0, 2.0, 3.0, 4.0], [2.0, 3.0, 4.0, 5.0], [3.0, 4.0, 5.0, 6.0], [4.0, 5.0, 6.0, 7.0]];
         
         let interp = BicubicInterpolator::new(x, y, z).unwrap();
         
@@ -623,30 +611,27 @@ mod tests {
     
     #[test]
     fn test_dimension_mismatch() {
-        let x = vec64::from_slice(&[0.0, 1.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
-        let z = ArrayF64::from_vec2d(vec![vec![1.0, 2.0]]).unwrap(); // Wrong dimensions
+        let x = VectorF64::from_slice(&[0.0, 1.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
+        let z = array64![[1.0, 2.0]]; // Wrong dimensions
         
         assert!(BilinearInterpolator::new(x, y, z).is_err());
     }
     
     #[test]
     fn test_insufficient_data() {
-        let x = vec64::from_slice(&[0.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
-        let z = ArrayF64::from_vec2d(vec![vec![1.0, 2.0]]).unwrap();
+        let x = VectorF64::from_slice(&[0.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
+        let z = array64![[1.0, 2.0]];
         
         assert!(BilinearInterpolator::new(x, y, z).is_err());
     }
     
     #[test]
     fn test_extrapolation_modes() {
-        let x = vec64::from_slice(&[0.0, 1.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
-        let z = ArrayF64::from_vec2d(vec![
-            vec![1.0, 2.0],
-            vec![3.0, 4.0]
-        ]).unwrap();
+        let x = VectorF64::from_slice(&[0.0, 1.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
+        let z = array64![[1.0, 2.0], [3.0, 4.0]];
         
         // Test Error mode (default)
         let interp = BilinearInterpolator::new(x.clone(), y.clone(), z.clone()).unwrap();
@@ -670,13 +655,9 @@ mod tests {
     
     #[test]
     fn test_bicubic_insufficient_points() {
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0]); // Only 3 points, need 4
-        let y = vec64::from_slice(&[0.0, 1.0, 2.0]);
-        let z = ArrayF64::from_vec2d(vec![
-            vec![1.0, 2.0, 3.0],
-            vec![2.0, 3.0, 4.0],
-            vec![3.0, 4.0, 5.0]
-        ]).unwrap();
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]); // Only 3 points, need 4
+        let y = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+        let z = array64![[1.0, 2.0, 3.0], [2.0, 3.0, 4.0], [3.0, 4.0, 5.0]];
         
         assert!(BicubicInterpolator::new(x, y, z).is_err());
     }

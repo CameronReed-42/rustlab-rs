@@ -315,8 +315,8 @@ pub fn meshgrid(x: &VectorF64, y: &VectorF64) -> (ArrayF64, ArrayF64) {
     // Serial population for all grids
     for i in 0..ny {
         for j in 0..nx {
-            X.set(i, j, x[j]);
-            Y.set(i, j, y[i]);
+            let _ = X.set(i, j, x[j]);
+            let _ = Y.set(i, j, y[i]);
         }
     }
     

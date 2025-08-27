@@ -38,7 +38,7 @@
 use crate::{LinearAlgebraError, Result};
 use faer::prelude::*;
 use faer::linalg::solvers::*;
-use rustlab_math::{ArrayF64, array64};
+use rustlab_math::ArrayF64;
 
 /// LU decomposition result for efficient multiple solves with same matrix
 /// 
@@ -801,6 +801,7 @@ impl DecompositionMethods for ArrayF64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rustlab_math::array64;
     use approx::assert_relative_eq;
     
     #[test]

@@ -9,11 +9,7 @@
 //! - `std![matrix, axis=1]` - standard deviation along axis 1
 //! - `var![matrix, axis=0]` - variance along axis 0
 
-use crate::{Array, Vector, Result};
-use crate::reductions::{Axis, AxisReductions};
-use faer_entity::Entity;
-use faer_traits::ComplexField;
-use num_traits::{Zero, One, FromPrimitive, Float};
+use crate::reductions::Axis;
 
 // Internal helper to convert axis number to Axis enum
 #[doc(hidden)]
@@ -301,46 +297,6 @@ mod tests {
         assert!((col_stds.get(1).unwrap() - 2.0_f64.sqrt()).abs() < 1e-10);
     }
     
-    #[test]
-    fn test_math_first_syntax_comparison() {
-        let matrix = ArrayF64::from_slice(&[
-            1.0, 2.0, 3.0, 4.0,
-            5.0, 6.0, 7.0, 8.0,
-            9.0, 10.0, 11.0, 12.0
-        ], 3, 4).unwrap();
-        
-        // Old verbose syntax
-        let old_col_sums = matrix.sum_axis_keepdims(crate::reductions::Axis::Rows).unwrap();
-        
-        // New math-first syntax  
-        let new_col_sums = sum![matrix, axis=0, keep=true].unwrap();
-        
-        // Should produce identical results
-        assert_eq!(old_col_sums.shape(), new_col_sums.shape());
-        assert_eq!(old_col_sums.shape(), (1, 4));
-        
-        // Check values are the same
-        for j in 0..4 {
-            assert_eq!(
-                old_col_sums.get(0, j).unwrap(),
-                new_col_sums.get(0, j).unwrap()
-            );
-        }
-        
-        // Test row sums too
-        let old_row_sums = matrix.sum_axis_keepdims(crate::reductions::Axis::Cols).unwrap();
-        let new_row_sums = sum![matrix, axis=1, keep=true].unwrap();
-        
-        assert_eq!(old_row_sums.shape(), new_row_sums.shape());
-        assert_eq!(old_row_sums.shape(), (3, 1));
-        
-        for i in 0..3 {
-            assert_eq!(
-                old_row_sums.get(i, 0).unwrap(),
-                new_row_sums.get(i, 0).unwrap()
-            );
-        }
-    }
     
     #[test]
     fn test_real_world_example() {

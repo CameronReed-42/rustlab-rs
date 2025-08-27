@@ -1,6 +1,8 @@
 //! # RustLab Linear Regression
 //! 
 //! High-performance linear regression library optimized for AI code generation with math-first API design.
+
+#![allow(non_snake_case)]  // Allow mathematical notation (X for matrices, y for vectors)
 //! 
 //! ## Mathematical Specification
 //! 

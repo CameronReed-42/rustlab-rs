@@ -1,7 +1,7 @@
 //! Simplified OLS implementation to test compilation
 
-use rustlab_math::{ArrayF64, VectorF64, BasicStatistics, FunctionalReduce};
-use rustlab_linearalgebra::{DecompositionMethods, BasicLinearAlgebra};
+use rustlab_math::{ArrayF64, VectorF64};
+use rustlab_linearalgebra::BasicLinearAlgebra;
 use crate::error::{LinearRegressionError, Result};
 use crate::traits::{LinearModel, FittedModel};
 
@@ -12,6 +12,7 @@ pub struct SimpleOLS {
 }
 
 impl SimpleOLS {
+    /// Create a new simple OLS regression instance
     pub fn new() -> Self {
         Self { fit_intercept: true }
     }

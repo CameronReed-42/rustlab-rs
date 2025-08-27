@@ -76,6 +76,7 @@
 
 #[cfg(feature = "integration")]
 use rustlab_math::{VectorF64, BasicStatistics};
+#[cfg(feature = "integration")]
 use std::f64::consts::PI;
 
 /// Generate standard normal samples using the Box-Muller transformation
@@ -557,6 +558,7 @@ pub fn polar_method_samples<R: rand::Rng>(n: usize, rng: &mut R) -> VectorF64 {
 ///
 /// - Marsaglia & Tsang (2000): "The Ziggurat Method for Generating Random Variables"
 /// - Doornik (2005): "An Improved Ziggurat Method to Generate Normal Random Samples"
+#[derive(Debug)]
 pub struct ZigguratNormal {
     x: [f64; 128],
     r: [f64; 128],
@@ -755,7 +757,7 @@ pub fn inverse_normal_cdf(p: f64) -> f64 {
     }
 }
 
-#[cfg(disabled_test)]
+#[cfg(test)]
 mod tests {
     use super::*;
     use rand::thread_rng;

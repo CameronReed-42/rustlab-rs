@@ -32,10 +32,10 @@
 //! let real_eigenvals: Vec<f64> = symmetric.eigenvalues_self_adjoint()?;
 //! ```
 
-use crate::{Array, Vector, LinearAlgebraError, Result};
+use crate::{LinearAlgebraError, Result};
 use num_complex::Complex;
-use rustlab_math::{ArrayF64, array64};
-use faer::{Mat, Col};
+use rustlab_math::ArrayF64;
+use faer::Mat;
 
 /// Eigenvalue decomposition result containing eigenvalues and eigenvectors
 /// 
@@ -518,6 +518,7 @@ impl EigenvalueOps for ArrayF64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rustlab_math::array64;
     use approx::assert_relative_eq;
     
     #[test]

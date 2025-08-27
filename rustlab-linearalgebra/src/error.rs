@@ -102,7 +102,12 @@ pub enum LinearAlgebraError {
     /// let det = matrix.det()?;  // Now safe
     /// ```
     #[error("Matrix must be square for this operation, got shape ({rows}, {cols})")]
-    NotSquare { rows: usize, cols: usize },
+    NotSquare { 
+        /// Number of rows in the matrix
+        rows: usize, 
+        /// Number of columns in the matrix
+        cols: usize 
+    },
     
     /// Matrix is singular (not invertible)
     /// 
@@ -207,7 +212,12 @@ pub enum LinearAlgebraError {
     /// let result = &A ^ &B;  // Safe multiplication
     /// ```
     #[error("Dimension mismatch: expected {expected}, got {actual}")]
-    DimensionMismatch { expected: String, actual: String },
+    DimensionMismatch { 
+        /// Expected dimensions
+        expected: String, 
+        /// Actual dimensions
+        actual: String 
+    },
     
     /// Invalid matrix properties for the requested operation
     /// 
@@ -239,7 +249,10 @@ pub enum LinearAlgebraError {
     /// }
     /// ```
     #[error("Invalid matrix for operation: {reason}")]
-    InvalidMatrix { reason: String },
+    InvalidMatrix { 
+        /// Reason why the matrix is invalid
+        reason: String 
+    },
     
     /// Convergence failure in iterative algorithms
     /// 
@@ -275,7 +288,10 @@ pub enum LinearAlgebraError {
     /// }
     /// ```
     #[error("Algorithm failed to converge after {iterations} iterations")]
-    ConvergenceFailure { iterations: usize },
+    ConvergenceFailure { 
+        /// Number of iterations attempted before giving up
+        iterations: usize 
+    },
     
     /// Numerical instability detected during computation
     /// 
@@ -310,7 +326,10 @@ pub enum LinearAlgebraError {
     /// }
     /// ```
     #[error("Numerical instability detected: {details}")]
-    NumericalInstability { details: String },
+    NumericalInstability { 
+        /// Details about the numerical instability
+        details: String 
+    },
     
     /// Error propagated from underlying rustlab-math library
     /// 
@@ -362,7 +381,10 @@ pub enum LinearAlgebraError {
     /// }
     /// ```
     #[error("Computation error: {message}")]
-    ComputationError { message: String },
+    ComputationError { 
+        /// Error message describing the computation failure
+        message: String 
+    },
     
     /// Matrix decomposition algorithm failed
     /// 
@@ -404,7 +426,10 @@ pub enum LinearAlgebraError {
     /// }
     /// ```
     #[error("Matrix decomposition failed: {message}")]
-    DecompositionFailed { message: String },
+    DecompositionFailed { 
+        /// Details about why the decomposition failed
+        message: String 
+    },
 }
 
 impl LinearAlgebraError {

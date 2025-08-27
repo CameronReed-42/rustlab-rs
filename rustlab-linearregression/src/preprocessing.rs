@@ -14,6 +14,7 @@ pub struct PolynomialFeatures {
 }
 
 impl PolynomialFeatures {
+    /// Create a new polynomial feature generator
     pub fn new(degree: usize) -> Self {
         Self {
             degree,
@@ -22,6 +23,7 @@ impl PolynomialFeatures {
         }
     }
     
+    /// Transform input features into polynomial features
     pub fn transform(&self, X: &ArrayF64) -> Result<ArrayF64> {
         // TODO: Implement polynomial feature generation
         Ok(X.clone())
@@ -38,6 +40,7 @@ pub struct StandardScaler {
 }
 
 impl StandardScaler {
+    /// Create a new standard scaler
     pub fn new() -> Self {
         Self {
             means: None,

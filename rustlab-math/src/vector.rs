@@ -183,7 +183,7 @@ impl<T: Entity> Vector<T> {
     }
 
     /// Get reference to underlying faer column
-    pub fn as_faer(&self) -> ColRef<T> {
+    pub fn as_faer(&self) -> ColRef<'_, T> {
         self.inner.as_ref()
     }
 
@@ -322,11 +322,9 @@ impl<T: Entity> Vector<T> {
             return true;
         }
         
-        unsafe {
-            let col_ref = self.inner.as_ref();
-            let ptr = col_ref.as_ptr();
-            !ptr.is_null()
-        }
+        let col_ref = self.inner.as_ref();
+        let ptr = col_ref.as_ptr();
+        !ptr.is_null()
     }
 
     /// Get underlying data as slice with safe fallback

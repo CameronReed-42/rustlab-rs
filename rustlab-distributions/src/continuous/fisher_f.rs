@@ -4,7 +4,7 @@
 //! using rustlab-special for mathematical functions.
 
 use crate::error::{Result, DistributionError};
-use rustlab_special::gamma_functions::{gamma, lgamma};
+use rustlab_special::gamma_functions::lgamma;
 // Note: Incomplete beta function needs to be implemented
 use rand::Rng;
 
@@ -15,6 +15,8 @@ pub struct FisherF {
     pub df1: f64,
     /// Denominator degrees of freedom (d2 > 0)
     pub df2: f64,
+    /// Cached parameters tuple for trait implementation
+    params: (f64, f64),
 }
 
 impl FisherF {
@@ -38,7 +40,11 @@ impl FisherF {
             return Err(DistributionError::invalid_parameter("Denominator degrees of freedom must be positive and finite"));
         }
         
-        Ok(FisherF { df1, df2 })
+        Ok(FisherF { 
+            df1, 
+            df2,
+            params: (df1, df2),
+        })
     }
     
     /// Get the numerator degrees of freedom parameter
@@ -310,12 +316,7 @@ impl crate::Distribution for FisherF {
     }
     
     fn params(&self) -> &Self::Params {
-        // Note: This is a bit awkward due to the trait design
-        unsafe {
-            static mut PARAMS: (f64, f64) = (1.0, 1.0);
-            PARAMS = (self.df1, self.df2);
-            &PARAMS
-        }
+        &self.params
     }
     
     fn mean(&self) -> f64 {

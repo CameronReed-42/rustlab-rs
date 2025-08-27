@@ -519,9 +519,13 @@ impl PartialOrd<f64> for &VectorF64 {
     }
 }
 
-// Now we create a newtype that wraps the comparison and returns BooleanVector
+/// Wrapper for vector comparisons that enables fluent syntax
+/// 
+/// This struct wraps a vector reference and provides operator overloading
+/// to enable natural comparison syntax like `v > 5.0`.
 #[derive(Debug)]
 pub struct VectorComparisonWrapper<'a> {
+    /// Reference to the vector being compared
     pub vector: &'a VectorF64,
 }
 
@@ -541,31 +545,45 @@ impl<'a> Add<f64> for VectorComparisonWrapper<'a> {
 // on a newtype wrapper that can return BooleanVector
 
 /// Comparison wrapper that enables `Cmp(vector) > scalar` syntax returning BooleanVector
+/// Comparison wrapper for advanced operator overloading
+/// 
+/// This struct provides a different approach to vector comparisons
+/// using custom traits for operator overloading.
 #[derive(Debug, Copy, Clone)]
 pub struct Cmp<'a>(pub &'a VectorF64);
 
 // Create custom Greater/Less traits that work with operator syntax
 /// Custom Greater trait for true `>` operator overloading
 pub trait Greater<Rhs = Self> {
+    /// The resulting type after performing the greater than comparison
     type Output;
+    /// Performs the greater than comparison
     fn greater(self, rhs: Rhs) -> Self::Output;
 }
 
 /// Custom GreaterEqual trait for true `>=` operator overloading  
 pub trait GreaterEqual<Rhs = Self> {
+    /// The resulting type after performing the greater than or equal comparison
     type Output;
+    /// Performs the greater than or equal comparison
     fn greater_equal(self, rhs: Rhs) -> Self::Output;
 }
 
 /// Custom Less trait for true `<` operator overloading
+/// Custom Less trait for true `<` operator overloading
 pub trait Less<Rhs = Self> {
+    /// The resulting type after performing the less than comparison
     type Output;
+    /// Performs the less than comparison
     fn less(self, rhs: Rhs) -> Self::Output;
 }
 
 /// Custom LessEqual trait for true `<=` operator overloading
+/// Custom LessEqual trait for true `<=` operator overloading
 pub trait LessEqual<Rhs = Self> {
+    /// The resulting type after performing the less than or equal comparison
     type Output;
+    /// Performs the less than or equal comparison
     fn less_equal(self, rhs: Rhs) -> Self::Output;
 }
 

@@ -134,7 +134,9 @@ pub enum SliceIndex {
 /// 2D slice index for arrays: `array[(rows, cols)]`
 #[derive(Debug, Clone)]
 pub struct SliceIndex2D {
+    /// Row slice specification
     pub rows: SliceIndex,
+    /// Column slice specification
     pub cols: SliceIndex,
 }
 
@@ -164,6 +166,7 @@ pub struct SliceIndex2D {
 /// let slice4 = vec.slice_at(vec![0,2,4])?; // Vec<i32>
 /// ```
 pub trait IntoSliceIndex {
+    /// Convert this type into a SliceIndex for ergonomic slicing
     fn into_slice_index(self) -> SliceIndex;
 }
 

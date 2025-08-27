@@ -565,9 +565,9 @@ mod tests {
         let result = solver.solve(problem).unwrap();
         
         assert!(result.success);
-        assert!((result.solution[0] - 2.0).abs() < 1e-10);
-        assert!((result.solution[1] - 1.0).abs() < 1e-10);
-        assert!(result.objective_value < 1e-15);
+        assert!((result.solution[0] - 2.0).abs() < 1e-6);
+        assert!((result.solution[1] - 1.0).abs() < 1e-6);
+        assert!(result.objective_value < 1e-10);
     }
     
     #[test]

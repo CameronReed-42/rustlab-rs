@@ -319,7 +319,7 @@ impl Index<RangeFull> for VectorF64 {
 impl Index<&Vec<usize>> for VectorF64 {
     type Output = VectorF64;
     
-    fn index(&self, indices: &Vec<usize>) -> &Self::Output {
+    fn index(&self, _indices: &Vec<usize>) -> &Self::Output {
         // For fancy indexing, we need to return an owned result
         // This is a limitation - Index trait requires returning a reference
         // We'll need to use a different approach or keep the method-based API for fancy indexing
@@ -564,20 +564,16 @@ pub trait NaturalSlicing {
 impl NaturalSlicing for VectorF64 {
     fn select(&self, indices: Vec<usize>) -> VectorF64 {
         // Use existing fancy indexing implementation
-        // Import IntoSliceIndex trait if needed
-        use crate::ergonomic_slicing::IntoSliceIndex;
         self.slice_at(indices).unwrap()
     }
     
     fn select_where(&self, mask: BooleanVector) -> VectorF64 {
         // Use existing boolean mask implementation
-        use crate::ergonomic_slicing::IntoSliceIndex;
         self.slice_at(mask).unwrap()
     }
     
     fn slice_owned(&self, range: Range<usize>) -> VectorF64 {
         // Use existing range slicing implementation
-        use crate::ergonomic_slicing::IntoSliceIndex;
         self.slice_at(range).unwrap()
     }
     

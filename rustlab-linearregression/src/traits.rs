@@ -144,7 +144,7 @@ pub trait LinearModel {
     /// 
     /// let fitted = LinearRegression::new().fit_weighted(&X, &y, &weights)?;
     /// ```
-    fn fit_weighted(&self, X: &ArrayF64, y: &VectorF64, weights: &VectorF64) -> Result<Self::Fitted> {
+    fn fit_weighted(&self, X: &ArrayF64, y: &VectorF64, _weights: &VectorF64) -> Result<Self::Fitted> {
         // Default implementation ignores weights
         self.fit(X, y)
     }
@@ -545,7 +545,7 @@ pub trait RegularizedModel: LinearModel {
     /// elastic_net.set_alpha(0.1)?;
     /// elastic_net.set_l1_ratio(0.5)?;  // Equal L1/L2 mix
     /// ```
-    fn set_l1_ratio(&mut self, ratio: f64) -> Result<()> {
+    fn set_l1_ratio(&mut self, _ratio: f64) -> Result<()> {
         Ok(())  // Default: ignore for non-elastic-net models
     }
 }

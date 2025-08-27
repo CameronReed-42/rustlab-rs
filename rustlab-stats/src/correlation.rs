@@ -874,7 +874,6 @@ impl CrossCovariance<f64> for VectorF64 {
         assert_eq!(self.len(), other.len(), "Vectors must have the same length");
         assert!(!self.is_empty(), "Vectors cannot be empty");
         
-        let n = self.len() as i32;
         let self_slice = self.as_slice_unchecked();
         let other_slice = other.as_slice_unchecked();
         
@@ -938,7 +937,6 @@ impl CrossCovariance<f32> for VectorF32 {
         assert_eq!(self.len(), other.len(), "Vectors must have the same length");
         assert!(!self.is_empty(), "Vectors cannot be empty");
         
-        let n = self.len() as i32;
         let self_slice = self.as_slice_unchecked();
         let other_slice = other.as_slice_unchecked();
         

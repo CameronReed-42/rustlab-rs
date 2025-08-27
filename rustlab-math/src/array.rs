@@ -191,7 +191,7 @@ impl<T: Entity> Array<T> {
 
 
     /// Get reference to underlying faer matrix
-    pub fn as_faer(&self) -> MatRef<T> {
+    pub fn as_faer(&self) -> MatRef<'_, T> {
         self.inner.as_ref()
     }
 
@@ -875,7 +875,7 @@ where
     /// - [`row`]: Get owned Vector copy of row
     /// - [`col_view`]: Zero-copy column view
     /// - [`slice_rows`]: View multiple rows
-    pub fn row_view(&self, row_idx: usize) -> crate::Result<crate::slicing::SlicedArrayView<T>> {
+    pub fn row_view(&self, row_idx: usize) -> crate::Result<crate::slicing::SlicedArrayView<'_, T>> {
         if row_idx >= self.nrows() {
             return Err(crate::MathError::InvalidDimensions {
                 rows: self.nrows(),
@@ -949,7 +949,7 @@ where
     /// - [`row_view`]: Zero-copy row view
     /// - [`slice_cols`]: View multiple columns
     /// - [`from_vector_column`]: Create column matrix
-    pub fn col_view(&self, col_idx: usize) -> crate::Result<crate::slicing::SlicedArrayView<T>> {
+    pub fn col_view(&self, col_idx: usize) -> crate::Result<crate::slicing::SlicedArrayView<'_, T>> {
         if col_idx >= self.ncols() {
             return Err(crate::MathError::InvalidDimensions {
                 rows: self.nrows(),

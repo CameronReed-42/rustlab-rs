@@ -16,6 +16,8 @@ pub struct Beta {
     pub alpha: f64,
     /// Shape parameter beta (β > 0)
     pub beta: f64,
+    /// Cached parameters tuple for trait implementation
+    params: (f64, f64),
 }
 
 impl Beta {
@@ -39,7 +41,11 @@ impl Beta {
             return Err(DistributionError::invalid_parameter("Beta parameter must be positive and finite"));
         }
         
-        Ok(Beta { alpha, beta })
+        Ok(Beta { 
+            alpha, 
+            beta,
+            params: (alpha, beta),
+        })
     }
     
     /// Get the alpha parameter
@@ -340,12 +346,7 @@ impl crate::Distribution for Beta {
     }
     
     fn params(&self) -> &Self::Params {
-        // Note: This is a bit awkward due to the trait design
-        unsafe {
-            static mut PARAMS: (f64, f64) = (1.0, 1.0);
-            PARAMS = (self.alpha, self.beta);
-            &PARAMS
-        }
+        &self.params
     }
     
     fn mean(&self) -> f64 {

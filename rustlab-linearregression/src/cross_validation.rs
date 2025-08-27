@@ -4,7 +4,6 @@
 
 use rayon::prelude::*;
 use rustlab_math::{ArrayF64, VectorF64, BasicStatistics};
-use rustlab_math::functional::FunctionalReduce;
 use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
 use std::collections::HashMap;
@@ -14,9 +13,13 @@ use crate::traits::{LinearModel, FittedModel};
 /// K-fold cross-validation results
 #[derive(Clone, Debug)]
 pub struct CrossValidationResult {
+    /// Individual scores for each fold
     pub scores: VectorF64,
+    /// Mean score across all folds
     pub mean_score: f64,
+    /// Standard deviation of scores
     pub std_score: f64,
+    /// Index of the best performing fold
     pub best_fold: usize,
 }
 
@@ -241,9 +244,13 @@ where
 /// Grid search results
 #[derive(Clone, Debug)]
 pub struct GridSearchResult<M: LinearModel> {
+    /// Best hyperparameters found
     pub best_params: HashMap<String, f64>,
+    /// Best cross-validation score achieved
     pub best_score: f64,
+    /// Model trained with best parameters
     pub best_model: M::Fitted,
+    /// Results for all parameter combinations tested
     pub cv_results: Vec<(HashMap<String, f64>, CrossValidationResult)>,
 }
 

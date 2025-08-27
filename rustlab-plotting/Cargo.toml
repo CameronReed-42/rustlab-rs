@@ -38,6 +38,7 @@ plotters-cairo = "0.3"
 winapi = { version = "0.3", features = ["winuser"] }
 
 [dev-dependencies]
+approx = "0.5"
 
 [features]
 default = ["native", "jupyter"]

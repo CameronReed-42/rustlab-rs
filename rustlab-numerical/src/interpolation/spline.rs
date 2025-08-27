@@ -5,7 +5,7 @@
 //! - Monotonic cubic spline interpolation
 //! - Natural and clamped boundary conditions
 
-use rustlab_math::{vec64, VectorF64};
+use rustlab_math::VectorF64;
 use crate::{Result, NumericalError};
 use super::traits::{Interpolator1D, ExtrapolationMode, DifferentiableInterpolator1D};
 use super::utils::{check_dimensions, check_monotonic, find_interval};
@@ -41,6 +41,7 @@ pub struct CubicSpline {
     b: Vec<f64>, // First derivative coefficients
     c: Vec<f64>, // Second derivative coefficients / 2
     d: Vec<f64>, // Third derivative coefficients / 6
+    #[allow(dead_code)] // Stored for potential future introspection/debugging
     boundary: BoundaryCondition,
     extrapolation: ExtrapolationMode,
 }
@@ -58,8 +59,8 @@ impl CubicSpline {
     /// use rustlab_core::vec;
     /// use rustlab_numerical::interpolation::{CubicSpline, BoundaryCondition, Interpolator1D};
     /// 
-    /// let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-    /// let y = vec64::from_slice(&[0.0, 1.0, 4.0, 9.0]); // Quadratic-like data
+    /// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+    /// let y = VectorF64::from_slice(&[0.0, 1.0, 4.0, 9.0]); // Quadratic-like data
     /// let spline = CubicSpline::new(x, y, BoundaryCondition::Natural)?;
     /// 
     /// let result = spline.eval(1.5)?;
@@ -391,9 +392,9 @@ impl DifferentiableInterpolator1D for CubicSpline {
 /// use rustlab_core::vec;
 /// use rustlab_numerical::interpolation::interp1d_cubic_spline;
 /// 
-/// let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-/// let y = vec64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
-/// let xi = vec64::from_slice(&[0.5, 1.5, 2.5]);
+/// let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+/// let y = VectorF64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
+/// let xi = VectorF64::from_slice(&[0.5, 1.5, 2.5]);
 /// 
 /// let yi = interp1d_cubic_spline(&x, &y, &xi)?;
 /// # Ok::<(), rustlab_numerical::NumericalError>(())
@@ -406,14 +407,14 @@ pub fn interp1d_cubic_spline(x: &VectorF64, y: &VectorF64, xi: &VectorF64) -> Re
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustlab_math::{vec64};
+    use rustlab_math::{vec64, VectorF64};
     use approx::assert_relative_eq;
     
     #[test]
     fn test_natural_spline_linear() {
         // Linear function should be reproduced exactly
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let y = vec64::from_slice(&[1.0, 3.0, 5.0, 7.0]); // y = 2x + 1
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let y = VectorF64::from_slice(&[1.0, 3.0, 5.0, 7.0]); // y = 2x + 1
         let spline = CubicSpline::new(x, y, BoundaryCondition::Natural).unwrap();
         
         assert_relative_eq!(spline.eval(0.5).unwrap(), 2.0, epsilon = 1e-12);
@@ -424,8 +425,8 @@ mod tests {
     #[test]
     fn test_natural_spline_quadratic() {
         // Quadratic function y = x²
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
         let spline = CubicSpline::new(x, y, BoundaryCondition::Natural).unwrap();
         
         // Should be reasonably close to x² at intermediate points
@@ -438,8 +439,8 @@ mod tests {
     #[test]
     fn test_clamped_spline() {
         // Test clamped boundary conditions
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 4.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 4.0]);
         let spline = CubicSpline::new(
             x, y, 
             BoundaryCondition::Clamped { start_derivative: 0.0, end_derivative: 4.0 }
@@ -453,8 +454,8 @@ mod tests {
     #[test]
     fn test_spline_continuity() {
         // Test that spline is continuous at knots
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 3.0, 2.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 3.0, 2.0]);
         let spline = CubicSpline::new(x.clone(), y.clone(), BoundaryCondition::Natural).unwrap();
         
         // Values at knots should match exactly
@@ -467,8 +468,8 @@ mod tests {
     
     #[test]
     fn test_spline_derivatives() {
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0, 3.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 4.0, 9.0]);
         let spline = CubicSpline::new(x, y, BoundaryCondition::Natural).unwrap();
         
         // Test that derivative evaluation works
@@ -482,22 +483,22 @@ mod tests {
     
     #[test]
     fn test_insufficient_points() {
-        let x = vec64::from_slice(&[0.0, 1.0]);
-        let y = vec64::from_slice(&[0.0, 1.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0]);
         assert!(CubicSpline::new(x, y, BoundaryCondition::Natural).is_err());
     }
     
     #[test]
     fn test_not_a_knot_insufficient_points() {
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 4.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 4.0]);
         assert!(CubicSpline::new(x, y, BoundaryCondition::NotAKnot).is_err());
     }
     
     #[test]
     fn test_extrapolation_modes() {
-        let x = vec64::from_slice(&[0.0, 1.0, 2.0]);
-        let y = vec64::from_slice(&[0.0, 1.0, 4.0]);
+        let x = VectorF64::from_slice(&[0.0, 1.0, 2.0]);
+        let y = VectorF64::from_slice(&[0.0, 1.0, 4.0]);
         
         // Test with Error mode (default)
         let spline = CubicSpline::new(x.clone(), y.clone(), BoundaryCondition::Natural).unwrap();

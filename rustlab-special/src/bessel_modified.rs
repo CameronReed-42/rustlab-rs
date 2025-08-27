@@ -697,7 +697,7 @@ fn bessel_k_nu_relation(nu: f64, x: f64) -> f64 {
     }
 }
 
-fn bessel_k_nu_asymptotic(nu: f64, x: f64) -> f64 {
+fn bessel_k_nu_asymptotic(_nu: f64, x: f64) -> f64 {
     // Asymptotic expansion for large x:
     // K_ν(x) ≈ √(π/(2x)) * e^(-x) * [1 + O(1/x)]
     

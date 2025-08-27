@@ -36,7 +36,7 @@
 //! - Complements [`operators`] module (^ for matrix multiplication)
 
 use crate::{ArrayF64, VectorF64};
-use crate::broadcasting::{Shape, broadcast_compatibility, BroadcastType, BroadcastOp};
+use crate::broadcasting::{Shape, broadcast_compatibility, BroadcastType};
 use std::ops::{Add, Sub, Mul, Div};
 
 // ========== ADDITION (Matrix + Vector) ==========

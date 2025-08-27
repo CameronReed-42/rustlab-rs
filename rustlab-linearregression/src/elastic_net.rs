@@ -18,6 +18,7 @@ pub struct ElasticNet {
 }
 
 impl ElasticNet {
+    /// Create a new Elastic Net regression instance
     pub fn new(alpha: f64, l1_ratio: f64) -> Result<Self> {
         if alpha < 0.0 {
             return Err(LinearRegressionError::InvalidParameter {
@@ -56,7 +57,7 @@ pub struct FittedElasticNet {
 impl LinearModel for ElasticNet {
     type Fitted = FittedElasticNet;
     
-    fn fit(&self, X: &ArrayF64, y: &VectorF64) -> Result<Self::Fitted> {
+    fn fit(&self, X: &ArrayF64, _y: &VectorF64) -> Result<Self::Fitted> {
         // TODO: Implement coordinate descent for Elastic Net
         let n_features = X.ncols();
         Ok(FittedElasticNet {
@@ -73,7 +74,7 @@ impl FittedModel for FittedElasticNet {
         VectorF64::fill(n_samples, self.intercept.unwrap_or(0.0))
     }
     
-    fn score(&self, X: &ArrayF64, y: &VectorF64) -> f64 {
+    fn score(&self, _X: &ArrayF64, _y: &VectorF64) -> f64 {
         0.0
     }
     

@@ -39,6 +39,7 @@
 use std::f64::consts::{PI};
 
 /// Euler-Mascheroni constant
+#[allow(dead_code)]
 const EULER_GAMMA: f64 = 0.5772156649015328606065120900824024;
 
 

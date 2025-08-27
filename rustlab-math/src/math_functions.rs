@@ -4,10 +4,8 @@
 //! use SIMD when beneficial, maintaining our math-first ergonomics philosophy.
 //! Users write natural mathematical code and get optimal performance transparently.
 
-use crate::{Array, Vector, ArrayF64, ArrayF32, VectorF64, VectorF32, ArrayC64, ArrayC32, VectorC64, VectorC32};
+use crate::{ArrayF64, ArrayF32, VectorF64, VectorF32, ArrayC64, ArrayC32, VectorC64, VectorC32};
 use faer::{Mat, Col};
-use faer_entity::Entity;
-use faer_traits::ComplexField;
 use num_complex::Complex;
 
 // SIMD thresholds for mathematical functions - lower than basic ops since 
@@ -1089,8 +1087,6 @@ unsafe fn simd_sin_f64(a: &ArrayF64) -> ArrayF64 {
     
     for chunk in 0..chunks {
         let base_idx = chunk * 4;
-        let row = base_idx / cols;
-        let col = base_idx % cols;
         
         // Load 4 values
         let mut values = [0.0; 4];

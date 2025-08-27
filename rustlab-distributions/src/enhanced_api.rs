@@ -188,7 +188,10 @@ use rand::Rng;
 /// - PDF/CDF: O(1) with special function evaluation
 /// - Batch operations: O(n) with optimized vectorized loops
 #[derive(Debug, Clone, PartialEq)]
-pub struct EnhancedNormal(Normal);
+pub struct EnhancedNormal {
+    inner: Normal,
+    pub(crate) params: (f64, f64),
+}
 
 impl EnhancedNormal {
     /// Create a new Normal distribution N(μ, σ²) with ergonomic error handling
@@ -245,7 +248,11 @@ impl EnhancedNormal {
     /// - **Space Complexity**: O(1) - same memory layout as core Normal
     /// - **Overhead**: Zero runtime overhead compared to core API
     pub fn new(mean: f64, std_dev: f64) -> Self {
-        Self(Normal::new(mean, std_dev).expect("Invalid normal distribution parameters"))
+        let inner = Normal::new(mean, std_dev).expect("Invalid normal distribution parameters");
+        Self {
+            inner,
+            params: (mean, std_dev),
+        }
     }
     
     /// Create a new Normal distribution with Result-based error handling
@@ -307,7 +314,11 @@ impl EnhancedNormal {
     ///
     /// For interactive use with known-valid parameters, use `new()`.
     pub fn try_new(mean: f64, std_dev: f64) -> Result<Self> {
-        Ok(Self(Normal::new(mean, std_dev)?))
+        let inner = Normal::new(mean, std_dev)?;
+        Ok(Self {
+            inner,
+            params: (mean, std_dev),
+        })
     }
     
     /// Create the standard normal distribution N(0, 1)
@@ -360,7 +371,10 @@ impl EnhancedNormal {
     /// This constructor is guaranteed to never fail and has zero computational cost.
     /// It's implemented as a simple constant initialization.
     pub fn standard() -> Self {
-        Self(Normal::standard())
+        Self {
+            inner: Normal::standard(),
+            params: (0.0, 1.0),
+        }
     }
     
     /// Create a normal distribution with specified mean and unit variance
@@ -438,44 +452,44 @@ impl EnhancedNormal {
     /// - Streaming samples directly to disk for massive datasets
     /// - Using the core sampling traits for more control over memory usage
     pub fn samples<R: Rng>(&self, n: usize, rng: &mut R) -> Vec<f64> {
-        self.0.sample_n(rng, n)
+        self.inner.sample_n(rng, n)
     }
     
     /// Sample a single value with ergonomic API
     pub fn sample<R: Rng>(&self, rng: &mut R) -> f64 {
-        self.0.sample(rng)
+        self.inner.sample(rng)
     }
     
     // Delegate all other methods to the inner Normal
     
     /// Get the mean parameter
     pub fn mean(&self) -> f64 {
-        self.0.mean()
+        self.inner.mean()
     }
     
     /// Get the standard deviation parameter
     pub fn std_dev(&self) -> f64 {
-        self.0.std_dev()
+        self.inner.std_dev()
     }
     
     /// Get the variance parameter
     pub fn variance(&self) -> f64 {
-        self.0.variance()
+        self.inner.variance()
     }
     
     /// Probability density function (PDF)
     pub fn pdf(&self, x: f64) -> f64 {
-        self.0.pdf(x)
+        self.inner.pdf(x)
     }
     
     /// Natural logarithm of the PDF
     pub fn log_pdf(&self, x: f64) -> f64 {
-        self.0.log_pdf(x)
+        self.inner.log_pdf(x)
     }
     
     /// Cumulative distribution function (CDF)
     pub fn cdf(&self, x: f64) -> f64 {
-        self.0.cdf(x)
+        self.inner.cdf(x)
     }
     
     /// Quantile function (inverse CDF) with ergonomic error handling
@@ -544,7 +558,7 @@ impl EnhancedNormal {
     ///
     /// For programmatic use with potentially invalid inputs, use `try_quantile()`.
     pub fn quantile(&self, p: f64) -> f64 {
-        self.0.inverse_cdf(p).expect("Probability must be in [0, 1]")
+        self.inner.inverse_cdf(p).expect("Probability must be in [0, 1]")
     }
     
     /// Quantile function with Result-based error handling
@@ -597,17 +611,17 @@ impl EnhancedNormal {
     /// }
     /// ```
     pub fn try_quantile(&self, p: f64) -> Result<f64> {
-        self.0.inverse_cdf(p)
+        self.inner.inverse_cdf(p)
     }
     
     /// Evaluate PDF for multiple values
     pub fn pdf_slice(&self, x: &[f64]) -> Vec<f64> {
-        self.0.pdf_slice(x)
+        self.inner.pdf_slice(x)
     }
     
     /// Evaluate CDF for multiple values
     pub fn cdf_slice(&self, x: &[f64]) -> Vec<f64> {
-        self.0.cdf_slice(x)
+        self.inner.cdf_slice(x)
     }
 }
 
@@ -632,12 +646,12 @@ impl EnhancedNormal {
     
     /// Evaluate PDF for a rustlab-math vector
     pub fn pdf_vector(&self, x: &rustlab_math::VectorF64) -> rustlab_math::VectorF64 {
-        self.0.pdf_vector(x)
+        self.inner.pdf_vector(x)
     }
     
     /// Evaluate CDF for a rustlab-math vector
     pub fn cdf_vector(&self, x: &rustlab_math::VectorF64) -> rustlab_math::VectorF64 {
-        self.0.cdf_vector(x)
+        self.inner.cdf_vector(x)
     }
 }
 

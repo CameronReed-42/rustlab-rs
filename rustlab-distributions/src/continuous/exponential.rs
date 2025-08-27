@@ -266,7 +266,6 @@ impl Exponential {
             _ => {
                 // For higher moments, use the general formula
                 // This is an approximation
-                let mean = self.mean();
                 let var = self.variance();
                 var.powf(n as f64 / 2.0) * 2.0_f64.powf(n as f64 - 2.0)
             }
@@ -440,7 +439,7 @@ mod tests {
         assert_eq!(exp.moment(0), 1.0);
         assert_eq!(exp.moment(1), 0.5); // Mean
         assert_eq!(exp.moment(2), 0.5); // E[X^2] = 2/λ^2
-        assert_eq!(exp.moment(3), 1.5); // E[X^3] = 6/λ^3
+        assert_eq!(exp.moment(3), 0.75); // E[X^3] = 6/λ^3 = 6/8 = 0.75
         
         // Test central moments
         assert_eq!(exp.central_moment(0), 1.0);
