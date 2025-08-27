@@ -14,11 +14,17 @@ RustLab provides a production-ready numerical computing platform for the big dat
 
 ## 🎯 Vision
 
-RustLab provides a comprehensive scientific computing platform that combines:
+RustLab is **not a clone** of NumPy, or any other existing numerical library. Instead, it embraces Rust's unique strengths to create a distinctly Rust-native scientific computing ecosystem that:
+
+- **Respects Rust's Idiomatic Syntax**: Leverages Rust's pervasive use of traits and method chaining for elegant, composable mathematical operations
+- **Embraces Zero-Cost Abstractions**: High-level mathematical expressions compile to optimal machine code without runtime overhead
+- **Prioritizes Memory Efficiency**: Extensive use of views and borrowing patterns for zero-copy operations wherever possible
+
+### Core Capabilities
 - **Blazing Performance**: Automatic SIMD and parallel computation via the faer library
 - **Math-First Syntax**: Natural, script-like ergonomics with zero-cost abstractions
 - **Simplified Type System**: Streamlined types focused on efficient numerical computing (`ArrayF64`, `VectorF64`, etc.)
-- **Integrated Visualization**: Built-in 2D and 3D plotting capabilities to assist with visualization for code development
+- **Integrated Visualization**: Built-in 2D and 3D native rust plotters library for plotting capabilities to assist with visualization for code development. Note: this plotting library is currently very basic, and is NOT intended to replace other excellent plotting libraries (for e.g. python matplotlib) if publication-quality plotting is needed.
 - **Memory Safety**: Rust's unique approach to safe, concurrent programming
 - **AI-Optimized Design**: Documentation and APIs that prevent common AI code generation errors
 - **Accessible to Non-Experts**: Human-readable code that scientists can understand without Rust expertise
@@ -73,7 +79,7 @@ let simulation = vectorize![complex: monte_carlo(x), for x in &seeds];  // Force
 
 ### 1. Performance First (Big Data Ready)
 - Automatic SIMD optimization for arrays > 64 elements
-- Zero-copy views to minimize temporaries
+- **Zero-copy views** for maximum memory efficiency - operations on slices avoid unnecessary allocations
 - **Intelligent auto-parallel list comprehensions** with cost-based decisions
 - Parallel computation where beneficial - no overhead for small/fast operations
 - No GC pauses - consistent performance at scale
