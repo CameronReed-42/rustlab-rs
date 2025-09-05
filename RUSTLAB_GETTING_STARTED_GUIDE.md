@@ -4,11 +4,12 @@ Welcome to RustLab - a high-performance numerical computing ecosystem designed f
 
 ## 🎯 Philosophy and Design Vision
 
-RustLab is **not a clone** of NumPy, MATLAB, or any existing numerical library. Instead, it forges a uniquely Rust-native path to scientific computing that:
+RustLab is **not intended to be a clone** of NumPy, MATLAB, or any existing numerical library. Instead, it forges a uniquely Rust-native path to scientific computing that:
 
 - **Respects Rust's Idiomatic Patterns**: Embraces Rust's pervasive use of traits and method chaining for elegant, composable mathematical operations
 - **Leverages Zero-Copy Efficiency**: Extensive use of views and borrowing patterns minimize memory allocations and maximize performance
 - **Prioritizes Rust's Strengths**: Built from the ground up to take advantage of Rust's unique capabilities rather than porting concepts from other languages
+- **100% rust**: No external non-rust library dependencies. Compiled files are self-contained binaries.
 
 ## 🚀 Quick Start Summary
 
@@ -259,7 +260,7 @@ rustlab-rs/
 
 - **`rustlab-math/`**: The core crate with matrices, vectors, and mathematical operations
 - **`notebooks/`**: Cross-crate examples and comprehensive tutorials
-- **`rustlab-*/notebooks/`**: **Every crate has its own notebooks** with specialized examples
+- **`rustlab-*/notebooks/`**: **Most crates have their own notebooks** with specialized examples
 - **Documentation files**: Each crate has comprehensive `*_DOCUMENTATION.md` guides
 
 ---
@@ -295,6 +296,11 @@ RustLab provides multiple layers of documentation optimized for different use ca
   - Dependency management
   - Performance optimization
   - Reproducibility guidelines
+ 
+ #### 📝 **RUSTLAB_NUMPY_CHEATSHEET.md**
+- **Purpose**: Detailed comparison between RustLab and Numpy operations to aide migration
+- **For**: Data scientists and researchers 
+- **Covers**: Most important operations and comparisons between RustLab and Numpy
 
 ### 2. Crate-Specific Documentation
 
