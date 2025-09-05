@@ -241,6 +241,131 @@ use rustlab_math::creation::*;
 | Any with predicate | - | `arr.any(\|x\| predicate(x))` |
 | All with predicate | - | `arr.all(\|x\| predicate(x))` |
 
+## 🔢 Complex Number Operations
+
+### Complex Creation
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Complex from real/imag | `1 + 2j` | `Complex::new(1.0, 2.0)` | Direct constructor |
+| Complex vector | `np.array([1+2j, 3-1j])` | `cvec64![(1.0, 2.0), (3.0, -1.0)]` | Macro syntax |
+| Complex matrix | `np.array([[1+2j, 3-1j]])` | `carray64![[(1.0, 2.0), (3.0, -1.0)]]` | 2D macro |
+| From polar | `r * np.exp(1j * theta)` | `Complex::from_polar(r, theta)` | Polar coordinates |
+| Zeros complex | `np.zeros(5, dtype=complex)` | `VectorC64::zeros(5)` | Complex zeros |
+| Ones complex | `np.ones(5, dtype=complex)` | `VectorC64::ones(5)` | Complex ones |
+| Real part | `z.real` | `z.re` | Extract real |
+| Imaginary part | `z.imag` | `z.im` | Extract imaginary |
+| Complex conjugate | `np.conj(z)` | `z.conj()` | Conjugation |
+
+### Complex Properties
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Magnitude/Modulus | `np.abs(z)` or `np.absolute(z)` | `z.norm()` | \|z\| |
+| Phase/Argument | `np.angle(z)` | `z.arg()` | θ in polar form |
+| Squared magnitude | `np.abs(z)**2` | `z.norm_sqr()` | \|z\|² |
+| Is real | `z.imag == 0` | `z.im == 0.0` | Check if purely real |
+| Is imaginary | `z.real == 0` | `z.re == 0.0` | Check if purely imaginary |
+
+### Complex Arithmetic
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Addition | `z1 + z2` | `z1 + z2` | Complex addition |
+| Subtraction | `z1 - z2` | `z1 - z2` | Complex subtraction |
+| Multiplication | `z1 * z2` | `z1 * z2` | Complex multiplication |
+| Division | `z1 / z2` | `z1 / z2` | Complex division |
+| Power | `z ** n` | `z.powf(n)` or `z.powi(n)` | Complex power |
+| Square root | `np.sqrt(z)` | `z.sqrt()` | Principal square root |
+| Exponential | `np.exp(z)` | `z.exp()` | e^z |
+| Natural log | `np.log(z)` | `z.ln()` | Principal branch |
+| Reciprocal | `1 / z` | `z.inv()` | 1/z |
+
+### Complex Vector Operations  
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Element-wise conjugate | `np.conj(vec)` | `vec.map(\|z\| z.conj())` | Vector conjugation |
+| Vector magnitude | `np.abs(vec)` | `vec.map(\|z\| z.norm())` | \|z_i\| for each element |
+| Vector phase | `np.angle(vec)` | `vec.map(\|z\| z.arg())` | arg(z_i) for each |
+| Real parts | `vec.real` | `vec.map(\|z\| z.re)` | Extract all real parts |
+| Imaginary parts | `vec.imag` | `vec.map(\|z\| z.im)` | Extract all imag parts |
+| Dot product (complex) | `np.vdot(u, v)` | `&u ^ &v.map(\|z\| z.conj())` | u·v̄ |
+| Inner product | `np.inner(u, v)` | `&u ^ &v` | Standard complex inner |
+
+### Complex Matrix Operations
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Matrix multiplication | `A @ B` | `&A ^ &B` | Complex matrix multiplication |
+| Hermitian transpose | `A.T.conj()` | `A.hermitian()` | A† (conjugate transpose) |
+| Transpose only | `A.T` | `A.transpose()` | Just transpose, no conjugate |
+| Determinant (complex) | `np.linalg.det(A)` | `A.det()?` | Complex determinant |
+| Eigenvalues | `np.linalg.eig(A)[0]` | `A.eigenvalues()?` | May be complex |
+| Complex trace | `np.trace(A)` | `A.trace()` | Sum of diagonal (complex) |
+| Matrix inverse | `np.linalg.inv(A)` | `A.inv()?` | Complex matrix inverse |
+
+### Complex Trigonometric Functions
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Complex sine | `np.sin(z)` | `z.sin()` | sin(z) |
+| Complex cosine | `np.cos(z)` | `z.cos()` | cos(z) |
+| Complex tangent | `np.tan(z)` | `z.tan()` | tan(z) |
+| Complex hyperbolic sine | `np.sinh(z)` | `z.sinh()` | sinh(z) |
+| Complex hyperbolic cosine | `np.cosh(z)` | `z.cosh()` | cosh(z) |
+| Complex hyperbolic tangent | `np.tanh(z)` | `z.tanh()` | tanh(z) |
+
+### Complex Array Functions
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Complex array from real | `real_arr + 0j` | `real_arr.map(\|x\| Complex::new(x, 0.0))` | Real → Complex |
+| Split into real/imag | `arr.real, arr.imag` | `arr.map(\|z\| z.re), arr.map(\|z\| z.im)` | Separate components |
+| Combine real/imag | `real + 1j * imag` | `real.zip(&imag).map(\|(r, i)\| Complex::new(r, i))` | Combine arrays |
+| Complex broadcasting | `real_matrix + 1j * imag_vector` | Use broadcasting with `Complex::new` | Mixed operations |
+
+### Fourier Transform Preparation
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Complex exponential | `np.exp(1j * theta)` | `Complex::from_polar(1.0, theta)` | e^{iθ} = cos(θ) + i·sin(θ) |
+| Twiddle factors | `np.exp(-2j * np.pi * k / N)` | `(0..N).map(\|k\| Complex::from_polar(1.0, -2.0 * PI * k as f64 / N as f64))` | FFT basis |
+| Complex unit circle | `np.exp(1j * np.linspace(0, 2*pi, N))` | `linspace(0.0, 2.0*PI, N).map(\|theta\| Complex::from_polar(1.0, theta))` | Unit circle points |
+
+### Advanced Complex Operations
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Complex sorting (by magnitude) | `arr[np.argsort(np.abs(arr))]` | `vec.sort_by(\|a, b\| a.norm().partial_cmp(&b.norm()).unwrap())` | Sort by |z| |
+| Complex sorting (by phase) | `arr[np.argsort(np.angle(arr))]` | `vec.sort_by(\|a, b\| a.arg().partial_cmp(&b.arg()).unwrap())` | Sort by arg(z) |
+| Real part filtering | `arr[arr.real > 0]` | `vec.filter(\|z\| z.re > 0.0)` | Filter by real part |
+| Quadrant analysis | Custom logic | `vec.filter(\|z\| z.re > 0.0 && z.im > 0.0)` | First quadrant |
+| Complex mean | `np.mean(arr)` | `vec.fold(Complex::zero(), \|sum, z\| sum + z) / vec.len() as f64` | Average complex |
+| Complex variance | Custom calculation | Custom with complex arithmetic | Complex statistics |
+
+### Signal Processing with Complex Numbers
+| Operation | NumPy | RustLab | Notes |
+|-----------|-------|---------|-------|
+| Analytic signal | `scipy.signal.hilbert(real_signal)` | Use Hilbert transform crate | Complex envelope |
+| Frequency shift | `signal * np.exp(1j * 2 * pi * f * t)` | `signal.zip(&time).map(\|(s, t)\| s * Complex::from_polar(1.0, 2.0*PI*f*t))` | Modulation |
+| Phase unwrapping | `np.unwrap(np.angle(signal))` | Custom phase unwrapping logic | Continuous phase |
+| Complex demodulation | `signal * np.conj(carrier)` | `signal.zip(&carrier).map(\|(s, c)\| s * c.conj())` | Remove carrier |
+
+### Performance Tips for Complex Numbers
+```rust
+// Efficient complex vector operations
+let z1 = cvec64![(1.0, 2.0), (3.0, -1.0), (0.5, 1.5)];
+let z2 = cvec64![(2.0, 1.0), (-1.0, 2.0), (1.0, -0.5)];
+
+// Vectorized complex operations (preferred)
+let product = z1.zip(&z2).map(|(a, b)| a * b);
+let magnitude = z1.map(|z| z.norm());
+let phase = z1.map(|z| z.arg());
+
+// Complex matrix operations with views (zero-copy)
+let complex_matrix = carray64![[(1.0, 0.0), (0.0, 1.0)], [(0.0, -1.0), (1.0, 0.0)]];
+let hermitian = complex_matrix.map(|z| z.conj()).transpose();
+
+// FFT-ready complex vectors
+let n = 1024;
+let signal: VectorC64 = (0..n)
+    .map(|k| Complex::from_polar(1.0, 2.0 * PI * k as f64 / n as f64))
+    .collect::<Vec<_>>()
+    .into();
+```
+
 ## 🧮 Mathematical Functions
 
 ### Trigonometric
