@@ -73,6 +73,7 @@ let simulation = vectorize![complex: monte_carlo(x), for x in &seeds];  // Force
 - **AI Development**: Read `RUSTLAB_FOR_AI_GUIDE.md` for AI code generation guidelines
 - **Jupyter Workflows**: Consult `RUST_NOTEBOOK_BEST_PRACTICES.md` for notebook development
 - **Comprehensive Docs**: Each crate has its own `*_DOCUMENTATION.md` file
+- **Numpy Migration**: Consult `RUSTLAB_NUMPY_CHEATSHEET.md`for comprehensive comparisons
 - **Example Notebooks**: Every crate includes a `notebooks/` directory with examples
 
 ## 💡 Key Design Principles
