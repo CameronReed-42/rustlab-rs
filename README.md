@@ -129,6 +129,13 @@ let (X, Y) = meshgrid!(x: x_range, y: y_range);
 
 ## 📊 Installation
 
+ git clone https://github.com/CameronReed-42/rustlab-rs.git
+
+ cd to rustlab-rs
+ cargo build --release
+
+For your own new RustLab projects:
+
 Add to your `Cargo.toml`:
 ```toml
 [dependencies]
