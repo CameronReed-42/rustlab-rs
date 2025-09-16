@@ -1,0 +1,30 @@
+[package]
+name = "rustlab-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["CameronReed-42"]
+
+[dependencies]
+rustlab-math = { path = "rustlab-math" }
+rustlab-linearalgebra = { path = "rustlab-linearalgebra", optional = true }
+rustlab-optimize = { path = "rustlab-optimize", optional = true }
+rustlab-stats = { path = "rustlab-stats", optional = true }
+rustlab-special = { path = "rustlab-special", optional = true }
+rustlab-distributions = { path = "rustlab-distributions", optional = true }
+rustlab-numerical = { path = "rustlab-numerical", optional = true }
+rustlab-plotting = { path = "rustlab-plotting", optional = true }
+rustlab-linearregression = { path = "rustlab-linearregression", optional = true }
+num-complex = "0.4"
+
+[features]
+default = ["linalg", "optimization", "stats", "distributions", "numerical", "special", "plotting"]
+linalg = ["dep:rustlab-linearalgebra"]
+optimization = ["dep:rustlab-optimize"]
+stats = ["dep:rustlab-stats"]
+distributions = ["dep:rustlab-distributions"]
+numerical = ["dep:rustlab-numerical"]
+special = ["dep:rustlab-special"]
+plotting = ["dep:rustlab-plotting"]
+linearregression = ["dep:rustlab-linearregression"]
+full = ["linalg", "optimization", "stats", "distributions", "numerical", "special", "plotting", "linearregression"]
+

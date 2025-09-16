@@ -1,0 +1,47 @@
+[package]
+name = "rustlab-plotting"
+version = "0.1.0"
+edition = "2021"
+authors = ["RustLab Contributors"]
+description = "Math-first plotting library with tight integration to rustlab-math"
+repository = "https://github.com/CameronReed-42/rustlab-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["plotting", "visualization", "scientific", "charts", "mathematics"]
+categories = ["visualization", "science", "mathematics"]
+
+[dependencies]
+# Core mathematical functionality - provides VectorF64, ArrayF64, and mathematical functions
+rustlab-math = { path = "../rustlab-math" }
+
+# Plotting backends
+plotters = "0.3"
+plotters-svg = "0.3"
+plotters-bitmap = "0.3"
+
+# Utilities
+thiserror = "1.0"
+image = "0.24"
+tempfile = "3.0"
+base64 = "0.21"
+
+# Contour plotting
+contour = "0.4"
+
+# Optional evcxr support for Jupyter notebooks (cross-platform)
+evcxr = { version = "0.20", optional = true }
+evcxr_runtime = { version = "1.1", optional = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+plotters-cairo = "0.3"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
+
+[dev-dependencies]
+approx = "0.5"
+
+[features]
+default = ["native", "jupyter"]
+native = []
+jupyter = []
+evcxr-support = ["evcxr", "evcxr_runtime"]
