@@ -97,7 +97,23 @@ impl LevenbergMarquardt {
             min_improvement_ratio: 0.5,
         }
     }
-    
+
+    /// Create custom Levenberg-Marquardt solver with specified parameters
+    pub fn custom(max_iterations: usize, tolerance: f64) -> Self {
+        Self {
+            max_iterations,
+            gradient_tolerance: tolerance,
+            parameter_tolerance: tolerance,
+            objective_tolerance: tolerance * 1e-4,
+            lambda_init: 1e-3,
+            lambda_increase: 10.0,
+            lambda_decrease: 0.7,
+            lambda_max: 1e10,
+            finite_diff_step: 1e-8,
+            min_improvement_ratio: 0.25,
+        }
+    }
+
     /// Compute numerical Jacobian using central differences with math-first operations
     fn numerical_jacobian(&self, problem: &OptimizationProblem, params: &VectorF64) -> Result<ArrayF64> {
         // Only works for residual-type problems
@@ -200,7 +216,7 @@ impl LevenbergMarquardt {
     fn compute_improvement_ratio(
         &self,
         problem: &OptimizationProblem,
-        current_params: &VectorF64,
+        _current_params: &VectorF64,
         new_params: &VectorF64,
         step: &VectorF64,
         jacobian: &ArrayF64,
@@ -260,7 +276,7 @@ impl Solver for LevenbergMarquardt {
         // Step 3: Transform initial parameters to unbounded space if bounds exist
         let mut current_params = if has_bounds {
             // Transform bounded initial parameters to unbounded space
-            let full_initial = problem.expand_parameters(&reduced_initial);
+            let _full_initial = problem.expand_parameters(&reduced_initial);
             match problem.initial_unbounded() {
                 Ok(unbounded) => problem.reduce_parameters(&unbounded),
                 Err(_) => reduced_initial, // Fallback if transformation fails

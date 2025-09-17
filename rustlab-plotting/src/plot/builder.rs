@@ -118,23 +118,23 @@ impl Plot {
     }
 
     // Add series with rustlab-style API
-    pub fn line(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn line(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Line, None)
     }
 
-    pub fn line_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn line_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Line, Some(label.into()))
     }
 
-    pub fn scatter(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn scatter(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Scatter, None)
     }
 
-    pub fn scatter_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn scatter_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Scatter, Some(label.into()))
     }
 
-    pub fn scatter_marker(mut self, x: &VectorF64, y: &VectorF64, marker: Marker) -> Self {
+    pub fn scatter_marker(self, x: &VectorF64, y: &VectorF64, marker: Marker) -> Self {
         let mut plot = self.add_series(x, y, PlotType::Scatter, None);
         if let Some(last_series) = plot.series.last_mut() {
             last_series.marker = Some(marker);
@@ -142,7 +142,7 @@ impl Plot {
         plot
     }
 
-    pub fn scatter_marker_with(mut self, x: &VectorF64, y: &VectorF64, marker: Marker, label: impl Into<String>) -> Self {
+    pub fn scatter_marker_with(self, x: &VectorF64, y: &VectorF64, marker: Marker, label: impl Into<String>) -> Self {
         let mut plot = self.add_series(x, y, PlotType::Scatter, Some(label.into()));
         if let Some(last_series) = plot.series.last_mut() {
             last_series.marker = Some(marker);
@@ -150,20 +150,20 @@ impl Plot {
         plot
     }
 
-    pub fn bar(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn bar(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Bar, None)
     }
 
-    pub fn bar_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn bar_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Bar, Some(label.into()))
     }
 
-    pub fn histogram(mut self, data: &VectorF64, bins: usize) -> Self {
+    pub fn histogram(self, data: &VectorF64, bins: usize) -> Self {
         let (x, y) = compute_histogram(data, bins);
         self.add_series(&x, &y, PlotType::Histogram, None)
     }
 
-    pub fn histogram_with(mut self, data: &VectorF64, bins: usize, label: impl Into<String>) -> Self {
+    pub fn histogram_with(self, data: &VectorF64, bins: usize, label: impl Into<String>) -> Self {
         let (x, y) = compute_histogram(data, bins);
         self.add_series(&x, &y, PlotType::Histogram, Some(label.into()))
     }
@@ -441,23 +441,23 @@ impl SubplotBuilder {
     }
 
     // Series methods for the current subplot
-    pub fn line(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn line(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Line, None)
     }
 
-    pub fn line_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn line_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Line, Some(label.into()))
     }
 
-    pub fn scatter(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn scatter(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Scatter, None)
     }
 
-    pub fn scatter_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn scatter_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Scatter, Some(label.into()))
     }
 
-    pub fn scatter_marker(mut self, x: &VectorF64, y: &VectorF64, marker: Marker) -> Self {
+    pub fn scatter_marker(self, x: &VectorF64, y: &VectorF64, marker: Marker) -> Self {
         let mut subplot_builder = self.add_series(x, y, PlotType::Scatter, None);
         if let Some(last_series) = subplot_builder.subplot_series.last_mut() {
             last_series.marker = Some(marker);
@@ -465,7 +465,7 @@ impl SubplotBuilder {
         subplot_builder
     }
 
-    pub fn scatter_marker_with(mut self, x: &VectorF64, y: &VectorF64, marker: Marker, label: impl Into<String>) -> Self {
+    pub fn scatter_marker_with(self, x: &VectorF64, y: &VectorF64, marker: Marker, label: impl Into<String>) -> Self {
         let mut subplot_builder = self.add_series(x, y, PlotType::Scatter, Some(label.into()));
         if let Some(last_series) = subplot_builder.subplot_series.last_mut() {
             last_series.marker = Some(marker);
@@ -473,20 +473,20 @@ impl SubplotBuilder {
         subplot_builder
     }
 
-    pub fn bar(mut self, x: &VectorF64, y: &VectorF64) -> Self {
+    pub fn bar(self, x: &VectorF64, y: &VectorF64) -> Self {
         self.add_series(x, y, PlotType::Bar, None)
     }
 
-    pub fn bar_with(mut self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
+    pub fn bar_with(self, x: &VectorF64, y: &VectorF64, label: impl Into<String>) -> Self {
         self.add_series(x, y, PlotType::Bar, Some(label.into()))
     }
 
-    pub fn histogram(mut self, data: &VectorF64, bins: usize) -> Self {
+    pub fn histogram(self, data: &VectorF64, bins: usize) -> Self {
         let (x, y) = compute_histogram(data, bins);
         self.add_series(&x, &y, PlotType::Histogram, None)
     }
 
-    pub fn histogram_with(mut self, data: &VectorF64, bins: usize, label: impl Into<String>) -> Self {
+    pub fn histogram_with(self, data: &VectorF64, bins: usize, label: impl Into<String>) -> Self {
         let (x, y) = compute_histogram(data, bins);
         self.add_series(&x, &y, PlotType::Histogram, Some(label.into()))
     }

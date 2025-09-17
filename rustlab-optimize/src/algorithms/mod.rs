@@ -4,8 +4,7 @@
 //! emphasizing math-first expressions using rustlab-math.
 
 use rustlab_math::{VectorF64, ArrayF64};
-use crate::core::{Result, OptimizationResult, Algorithm, ConvergenceStatus};
-use crate::core::result::{OptimizationInfo};
+use crate::core::{Result, OptimizationResult, Algorithm, Error};
 
 pub mod levenberg_marquardt;
 pub mod bfgs;
@@ -66,8 +65,58 @@ pub struct OptimizationProblem {
     /// Fixed parameters: (index, value) pairs
     pub fixed_params: Vec<(usize, f64)>,
     
+    /// Parameter coupling constraints
+    pub parameter_couplings: Vec<ParameterCoupling>,
+    
     /// Problem characteristics for algorithm selection
     pub characteristics: ProblemCharacteristics,
+}
+
+/// Parameter coupling constraints for expressing mathematical relationships between parameters
+/// 
+/// # Mathematical Specification
+/// Allows expressing constraints like:
+/// - Linear: θ₂ = a·θ₁ + b (ratios, fixed differences, proportional relationships)
+/// - Sum: Σᵢ θᵢ = constant (conservation laws, fractions summing to 1)
+/// 
+/// # For AI Code Generation
+/// - Used internally by optimization problem - created via builder methods
+/// - Linear coupling covers most scientific scenarios (peak ratios, energy splittings)
+/// - Sum constraints handle conservation laws and normalized fractions
+/// - Math-first design using RustLab vector operations for transformations
+#[derive(Debug, Clone)]
+pub enum ParameterCoupling {
+    /// Linear relationship: θ_dependent = scale * θ_independent + offset
+    /// 
+    /// Common uses:
+    /// - Peak width ratios: σ₂ = 2·σ₁ (scale=2, offset=0)
+    /// - Energy level splitting: E₂ = E₁ + Δ (scale=1, offset=Δ)
+    /// - Intensity ratios: I₂ = 0.5·I₁ (scale=0.5, offset=0)
+    Linear {
+        /// Index of the independent parameter
+        independent: usize,
+        /// Index of the dependent parameter
+        dependent: usize,
+        /// Scale factor in the linear relationship
+        scale: f64,
+        /// Offset in the linear relationship
+        offset: f64,
+    },
+    
+    /// Sum constraint: Σᵢ θᵢ = total
+    /// 
+    /// Common uses:
+    /// - Fractions: f₁ + f₂ + f₃ = 1.0
+    /// - Mass conservation: m₁ + m₂ + m₃ = total_mass
+    /// - Probability normalization: P₁ + P₂ = 1.0
+    /// 
+    /// Note: Last parameter in the list becomes dependent on others
+    SumConstraint {
+        /// Indices of parameters in the sum constraint
+        parameters: Vec<usize>,
+        /// Total value the parameters must sum to
+        total: f64,
+    },
 }
 
 /// Objective function types with math-first signatures
@@ -131,6 +180,7 @@ impl OptimizationProblem {
             initial: initial.clone(),
             bounds,
             fixed_params: Vec::new(),
+            parameter_couplings: Vec::new(),
             characteristics: ProblemCharacteristics::General,
         }
     }
@@ -145,6 +195,7 @@ impl OptimizationProblem {
             initial: initial.clone(),
             bounds,
             fixed_params: Vec::new(),
+            parameter_couplings: Vec::new(),
             characteristics: ProblemCharacteristics::LeastSquares,
         }
     }
@@ -167,6 +218,7 @@ impl OptimizationProblem {
             initial: initial.clone(),
             bounds: None,
             fixed_params: Vec::new(),
+            parameter_couplings: Vec::new(),
             characteristics: ProblemCharacteristics::CurveFitting,
         }
     }
@@ -177,15 +229,132 @@ impl OptimizationProblem {
         self
     }
     
+    /// Add parameter coupling constraints using math-first interface
+    /// 
+    /// # Mathematical Specification
+    /// Allows expressing mathematical relationships between parameters:
+    /// - Linear coupling: θ_dependent = scale * θ_independent + offset
+    /// - Sum constraints: Σᵢ θᵢ = constant
+    /// 
+    /// # For AI Code Generation
+    /// - Use .couple_linear() for ratios, proportional relationships, fixed offsets
+    /// - Use .couple_sum() for conservation laws and normalized fractions
+    /// - Can combine with parameter fixing and bounds
+    /// - Transparent parameter space transformation during optimization
+    pub fn add_coupling(mut self, coupling: ParameterCoupling) -> Self {
+        self.parameter_couplings.push(coupling);
+        self
+    }
+    
+    /// Add linear parameter coupling: θ_dependent = scale * θ_independent + offset
+    /// 
+    /// # Mathematical Specification
+    /// Creates constraint: θ[dependent] = scale * θ[independent] + offset
+    /// 
+    /// # Common Uses
+    /// - Peak width ratios: σ₂ = 2·σ₁ → .couple_linear(0, 1, 2.0, 0.0)
+    /// - Energy level splitting: E₂ = E₁ + Δ → .couple_linear(0, 1, 1.0, delta)
+    /// - Intensity ratios: I₂ = 0.5·I₁ → .couple_linear(0, 1, 0.5, 0.0)
+    /// 
+    /// # Example
+    /// ```rust
+    /// use rustlab_optimize::{fit_double_gaussian, prelude::*};
+    /// 
+    /// // Constrain second peak width to be twice the first
+    /// let fit = fit_double_gaussian(&x, &y)
+    ///     .with_initial(&[A1, μ1, σ1, A2, μ2, σ2])
+    ///     .couple_linear(2, 5, 2.0, 0.0)  // σ₂ = 2·σ₁
+    ///     .solve()?;
+    /// ```
+    pub fn couple_linear(self, independent: usize, dependent: usize, scale: f64, offset: f64) -> Self {
+        self.add_coupling(ParameterCoupling::Linear {
+            independent,
+            dependent,
+            scale,
+            offset,
+        })
+    }
+    
+    /// Add parameter ratio constraint: θ₁/θ₂ = ratio
+    /// 
+    /// # Mathematical Specification  
+    /// Equivalent to: θ[param1] = ratio * θ[param2]
+    /// 
+    /// # Common Uses
+    /// - Peak intensity ratios from theory: I₁/I₂ = 2 → .couple_ratio(0, 3, 2.0)
+    /// - Stoichiometric ratios: [A]/[B] = 0.5 → .couple_ratio(0, 1, 0.5)
+    /// 
+    /// # Example
+    /// ```rust
+    /// // Quantum mechanical intensity ratio
+    /// let fit = fit_doublet(&x, &y)
+    ///     .couple_ratio(0, 3, 2.0)  // I₁/I₂ = 2
+    ///     .solve()?;
+    /// ```
+    pub fn couple_ratio(self, param1: usize, param2: usize, ratio: f64) -> Self {
+        self.couple_linear(param2, param1, ratio, 0.0)
+    }
+    
+    /// Add sum constraint: Σᵢ θᵢ = total
+    /// 
+    /// # Mathematical Specification
+    /// Constrains sum of specified parameters to equal total.
+    /// Last parameter becomes dependent: θ[last] = total - Σ(others)
+    /// 
+    /// # Common Uses
+    /// - Fractions: f₁ + f₂ + f₃ = 1.0
+    /// - Mass conservation: m₁ + m₂ + m₃ = total_mass
+    /// - Probability normalization: P₁ + P₂ = 1.0
+    /// 
+    /// # Example
+    /// ```rust
+    /// // Fractions must sum to 1
+    /// let fit = fit_multi_component(&x, &y)
+    ///     .couple_sum(&[0, 1, 2], 1.0)  // f₁ + f₂ + f₃ = 1
+    ///     .solve()?;
+    /// ```
+    pub fn couple_sum(self, parameters: &[usize], total: f64) -> Self {
+        self.add_coupling(ParameterCoupling::SumConstraint {
+            parameters: parameters.to_vec(),
+            total,
+        })
+    }
+    
     /// Set problem characteristics for algorithm selection
     pub fn with_characteristics(mut self, characteristics: ProblemCharacteristics) -> Self {
         self.characteristics = characteristics;
         self
     }
     
-    /// Get effective dimension (accounting for fixed parameters)
+    /// Get effective dimension (accounting for fixed parameters and couplings)
     pub fn effective_dimension(&self) -> usize {
-        self.initial.len() - self.fixed_params.len()
+        let coupled_params = self.get_coupled_parameters();
+        self.initial.len() - self.fixed_params.len() - coupled_params.len()
+    }
+    
+    /// Get list of dependent (coupled) parameter indices
+    pub fn get_coupled_parameters(&self) -> Vec<usize> {
+        let mut coupled = Vec::new();
+        
+        for coupling in &self.parameter_couplings {
+            match coupling {
+                ParameterCoupling::Linear { dependent, .. } => {
+                    if !coupled.contains(dependent) {
+                        coupled.push(*dependent);
+                    }
+                }
+                ParameterCoupling::SumConstraint { parameters, .. } => {
+                    // Last parameter in sum constraint becomes dependent
+                    if let Some(&last) = parameters.last() {
+                        if !coupled.contains(&last) {
+                            coupled.push(last);
+                        }
+                    }
+                }
+            }
+        }
+        
+        coupled
     }
     
     /// Evaluate objective function with math-first operations
@@ -234,22 +403,119 @@ impl OptimizationProblem {
         gradient
     }
     
-    /// Apply parameter fixing transformation
-    /// Maps reduced parameters to full parameter vector
+    /// Validate parameter constraints to prevent dependent parameters from being optimized
+    ///
+    /// # Returns
+    /// - `Ok(())` if no conflicts detected
+    /// - `Err(Error)` if dependent/coupled parameters are not properly constrained
+    ///
+    /// # Validation Rules
+    /// 1. Dependent parameters in linear coupling must not be free (should be fixed or excluded)
+    /// 2. Last parameter in sum constraints must not be free (determined by sum equation)
+    /// 3. Parameters can be both fixed and coupled (fixed takes precedence)
+    ///
+    /// # For AI Code Generation
+    /// - Called automatically before optimization begins
+    /// - Ensures dependent parameters are not double-counted in optimization space
+    pub fn validate_parameter_constraints(&self) -> Result<()> {
+        use std::collections::HashSet;
+        
+        // Collect all fixed parameter indices
+        let fixed_indices: HashSet<usize> = self.fixed_params.iter().map(|(idx, _)| *idx).collect();
+        
+        // Collect all dependent parameter indices (parameters whose values are determined by coupling)
+        let mut dependent_indices = HashSet::new();
+        for coupling in &self.parameter_couplings {
+            match coupling {
+                ParameterCoupling::Linear { dependent, .. } => {
+                    // In linear coupling x[dependent] = scale * x[independent] + offset
+                    // The dependent parameter's value is determined by the equation
+                    dependent_indices.insert(*dependent);
+                }
+                ParameterCoupling::SumConstraint { parameters, .. } => {
+                    // In sum constraint, the last parameter is dependent: x[last] = total - sum(others)
+                    if let Some(&last_idx) = parameters.last() {
+                        dependent_indices.insert(last_idx);
+                    }
+                }
+            }
+        }
+        
+        // Check for dependent parameters that are not fixed
+        // (i.e., dependent parameters that would be treated as free variables)
+        let floating_dependent: Vec<usize> = dependent_indices
+            .iter()
+            .filter(|&&idx| !fixed_indices.contains(&idx))
+            .copied()
+            .collect();
+        
+        if !floating_dependent.is_empty() {
+            return Err(Error::InvalidInput(format!(
+                "Parameter coupling error: dependent parameters {:?} must be fixed. \
+                 Dependent parameters have their values determined by coupling equations and cannot be optimized directly. \
+                 Use .fix_param() to fix these parameters or restructure the coupling to make different parameters dependent.",
+                floating_dependent
+            )));
+        }
+        
+        Ok(())
+    }
+    
+    /// Apply parameter fixing and coupling transformations
+    /// Maps reduced parameters to full parameter vector with all constraints applied
+    /// 
+    /// # Mathematical Specification
+    /// Transforms from optimization space (free parameters) to full parameter space:
+    /// 1. Expand fixed parameters: θ[i] = constant for i ∈ fixed
+    /// 2. Apply coupling constraints: linear and sum relationships
+    /// 
+    /// # For AI Code Generation
+    /// - Used internally by optimization algorithms
+    /// - Handles both parameter fixing and coupling transparently
+    /// - Math-first operations using RustLab vectors
     pub fn expand_parameters(&self, reduced_params: &VectorF64) -> VectorF64 {
-        if self.fixed_params.is_empty() {
+        let coupled_params = self.get_coupled_parameters();
+        
+        // If no constraints, return as-is
+        if self.fixed_params.is_empty() && self.parameter_couplings.is_empty() {
             return reduced_params.clone();
         }
         
         let mut full_params = VectorF64::zeros(self.initial.len());
         let mut reduced_idx = 0;
         
+        // First pass: handle fixed and free parameters
         for i in 0..self.initial.len() {
             if let Some(&(_, fixed_value)) = self.fixed_params.iter().find(|(idx, _)| *idx == i) {
+                // Fixed parameter
                 full_params[i] = fixed_value;
+            } else if coupled_params.contains(&i) {
+                // Coupled parameter - will be set in second pass
+                full_params[i] = 0.0;  // Placeholder
             } else {
+                // Free parameter
                 full_params[i] = reduced_params[reduced_idx];
                 reduced_idx += 1;
+            }
+        }
+        
+        // Second pass: apply coupling constraints using math-first operations
+        for coupling in &self.parameter_couplings {
+            match coupling {
+                ParameterCoupling::Linear { independent, dependent, scale, offset } => {
+                    // Math-first: θ_dep = scale * θ_indep + offset
+                    full_params[*dependent] = scale * full_params[*independent] + offset;
+                }
+                ParameterCoupling::SumConstraint { parameters, total } => {
+                    // Math-first: θ_last = total - Σ(others)
+                    if let Some(&last_idx) = parameters.last() {
+                        let sum_others: f64 = parameters[..parameters.len()-1]
+                            .iter()
+                            .map(|&i| full_params[i])
+                            .sum();
+                        full_params[last_idx] = total - sum_others;
+                    }
+                }
             }
         }
         
@@ -257,15 +523,29 @@ impl OptimizationProblem {
     }
     
     /// Extract free parameters from full parameter vector
+    /// 
+    /// # Mathematical Specification
+    /// Inverse of expand_parameters: extracts only the optimization variables,
+    /// excluding fixed parameters and dependent (coupled) parameters.
+    /// 
+    /// # For AI Code Generation
+    /// - Used internally to prepare parameters for optimization algorithms
+    /// - Returns reduced parameter vector containing only free variables
     pub fn reduce_parameters(&self, full_params: &VectorF64) -> VectorF64 {
-        if self.fixed_params.is_empty() {
+        let coupled_params = self.get_coupled_parameters();
+        
+        if self.fixed_params.is_empty() && self.parameter_couplings.is_empty() {
             return full_params.clone();
         }
         
         let mut reduced = Vec::new();
         
         for i in 0..full_params.len() {
-            if !self.fixed_params.iter().any(|(idx, _)| *idx == i) {
+            // Include only free parameters (not fixed, not coupled)
+            let is_fixed = self.fixed_params.iter().any(|(idx, _)| *idx == i);
+            let is_coupled = coupled_params.contains(&i);
+            
+            if !is_fixed && !is_coupled {
                 reduced.push(full_params[i]);
             }
         }
@@ -584,6 +864,7 @@ pub struct ConvergenceTest {
 }
 
 impl ConvergenceTest {
+    /// Create new convergence test with specified tolerances
     pub fn new(gradient_tol: f64, parameter_tol: f64, objective_tol: f64) -> Self {
         Self {
             gradient_tolerance: gradient_tol,
@@ -671,5 +952,74 @@ mod tests {
         let test_point = vec64![1.0, 2.0];
         let objective_value = problem.evaluate(&test_point);
         assert!(objective_value < 1e-10);  // Should be near zero at optimum
+    }
+    
+    #[test]
+    fn test_linear_parameter_coupling() {
+        let objective = |x: &VectorF64| x[0].powi(2) + x[1].powi(2);
+        let initial = vec64![1.0, 2.0];
+        
+        let problem = OptimizationProblem::new(objective, &initial, None)
+            .couple_linear(0, 1, 2.0, 1.0);  // x[1] = 2*x[0] + 1
+        
+        // Test parameter expansion
+        let reduced = vec64![3.0];  // Only one free parameter
+        let expanded = problem.expand_parameters(&reduced);
+        
+        assert_eq!(expanded[0], 3.0);    // Independent parameter
+        assert_eq!(expanded[1], 7.0);    // Dependent: 2*3 + 1 = 7
+        assert_eq!(problem.effective_dimension(), 1);
+    }
+    
+    #[test]
+    fn test_sum_constraint_coupling() {
+        let objective = |x: &VectorF64| x[0].powi(2) + x[1].powi(2) + x[2].powi(2);
+        let initial = vec64![0.3, 0.4, 0.3];
+        
+        let problem = OptimizationProblem::new(objective, &initial, None)
+            .couple_sum(&[0, 1, 2], 1.0);  // x[0] + x[1] + x[2] = 1.0
+        
+        // Test parameter expansion
+        let reduced = vec64![0.2, 0.3];  // Two free parameters
+        let expanded = problem.expand_parameters(&reduced);
+        
+        assert_eq!(expanded[0], 0.2);    // Free parameter
+        assert_eq!(expanded[1], 0.3);    // Free parameter  
+        assert_eq!(expanded[2], 0.5);    // Dependent: 1.0 - 0.2 - 0.3 = 0.5
+        assert_eq!(problem.effective_dimension(), 2);
+    }
+    
+    #[test]
+    fn test_combined_fixing_and_coupling() {
+        let objective = |x: &VectorF64| x[0].powi(2) + x[1].powi(2) + x[2].powi(2) + x[3].powi(2);
+        let initial = vec64![1.0, 2.0, 3.0, 4.0];
+        
+        let problem = OptimizationProblem::new(objective, &initial, None)
+            .fix_parameters(&[(1, 2.5)])         // Fix x[1] = 2.5
+            .couple_linear(0, 2, 1.5, 0.0);      // x[2] = 1.5 * x[0]
+        
+        let reduced = vec64![2.0, 3.0];  // Two free parameters: x[0] and x[3]
+        let expanded = problem.expand_parameters(&reduced);
+        
+        assert_eq!(expanded[0], 2.0);    // Free parameter
+        assert_eq!(expanded[1], 2.5);    // Fixed parameter
+        assert_eq!(expanded[2], 3.0);    // Coupled: 1.5 * 2.0 = 3.0
+        assert_eq!(expanded[3], 3.0);    // Free parameter
+        assert_eq!(problem.effective_dimension(), 2);
+    }
+    
+    #[test]
+    fn test_parameter_ratio() {
+        let objective = |x: &VectorF64| x[0].powi(2) + x[1].powi(2);
+        let initial = vec64![1.0, 2.0];
+        
+        let problem = OptimizationProblem::new(objective, &initial, None)
+            .couple_ratio(0, 1, 2.0);  // x[0]/x[1] = 2, so x[0] = 2*x[1]
+        
+        let reduced = vec64![3.0];  // Only x[1] is free
+        let expanded = problem.expand_parameters(&reduced);
+        
+        assert_eq!(expanded[0], 6.0);    // x[0] = 2 * x[1] = 2 * 3 = 6
+        assert_eq!(expanded[1], 3.0);    // Free parameter
     }
 }

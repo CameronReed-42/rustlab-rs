@@ -353,8 +353,8 @@ pub fn meshgrid(x: &VectorF64, y: &VectorF64) -> Result<(ArrayF64, ArrayF64)> {
     
     for i in 0..ny {
         for j in 0..nx {
-            x_grid.set(i, j, x[j]);
-            y_grid.set(i, j, y[i]);
+            let _ = x_grid.set(i, j, x[j]);
+            let _ = y_grid.set(i, j, y[i]);
         }
     }
     
@@ -379,7 +379,7 @@ where
     
     for i in 0..ny {
         for j in 0..nx {
-            z.set(i, j, f(x[j], y[i]));
+            let _ = z.set(i, j, f(x[j], y[i]));
         }
     }
     

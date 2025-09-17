@@ -1,13 +1,14 @@
 //! Nelder-Mead simplex algorithm (derivative-free)
 
-use rustlab_math::VectorF64;
-use crate::core::{Result, OptimizationResult, Algorithm, ConvergenceStatus};
+use crate::core::{Result, OptimizationResult, Algorithm};
 use super::{Solver, OptimizationProblem};
 
 /// Nelder-Mead simplex solver
 #[derive(Debug, Clone)]
 pub struct NelderMead {
+    #[allow(dead_code)]
     max_iterations: usize,
+    #[allow(dead_code)]
     tolerance: f64,
 }
 
@@ -18,6 +19,7 @@ impl Default for NelderMead {
 }
 
 impl NelderMead {
+    /// Create new Nelder-Mead solver with default settings
     pub fn new() -> Self {
         Self {
             max_iterations: 1000,

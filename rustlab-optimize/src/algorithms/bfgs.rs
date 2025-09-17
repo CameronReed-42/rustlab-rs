@@ -17,8 +17,11 @@ pub struct BFGS {
     objective_tolerance: f64,
     finite_diff_step: f64,
     line_search_max_iterations: usize,
+    #[allow(dead_code)]
     line_search_tolerance: f64,
+    #[allow(dead_code)]
     c1: f64,  // Armijo condition parameter
+    #[allow(dead_code)]
     c2: f64,  // Curvature condition parameter
 }
 
@@ -45,6 +48,7 @@ impl BFGS {
     }
     
     /// Compute numerical gradient using central differences
+    #[allow(dead_code)]
     fn numerical_gradient(&self, problem: &OptimizationProblem, params: &VectorF64) -> VectorF64 {
         let n = params.len();
         let h = self.finite_diff_step;
@@ -69,6 +73,7 @@ impl BFGS {
     }
     
     /// Simple backtracking line search with Armijo condition
+    #[allow(dead_code)]
     fn line_search(
         &self,
         problem: &OptimizationProblem,
@@ -219,7 +224,7 @@ impl Solver for BFGS {
         // Step 3: Transform initial parameters to unbounded space if bounds exist
         let mut current_params = if bounds_needed {
             // Transform bounded initial parameters to unbounded space
-            let full_initial = problem.expand_parameters(&reduced_initial);
+            let _full_initial = problem.expand_parameters(&reduced_initial);
             match problem.initial_unbounded() {
                 Ok(unbounded) => problem.reduce_parameters(&unbounded),
                 Err(_) => reduced_initial, // Fallback if transformation fails
@@ -400,7 +405,7 @@ impl Solver for BFGS {
         }
         
         // Max iterations reached
-        let final_params = problem.expand_parameters(&current_params);
+        let _final_params = problem.expand_parameters(&current_params);
         // Transform final parameters back to bounded space if needed
         let final_unbounded = problem.expand_parameters(&current_params);
         let final_params = if bounds_needed {

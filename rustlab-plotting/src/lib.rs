@@ -565,7 +565,7 @@ pub fn contour_plot(x_grid: &VectorF64, y_grid: &VectorF64, z_data: &ArrayF64) -
 /// - Different chart types for same dataset
 /// - Parameter sweep visualization
 pub fn subplot_demo() -> Result<()> {
-    use rustlab_math::{vec64, range};
+    use rustlab_math::range;
     
     // Create x-axis vectors using rustlab-math's range macro
     let x = range!(0.0 => 10.0, 100);          // Full range: [0, 10]
@@ -674,7 +674,7 @@ pub fn logplot_demo() -> Result<()> {
     use crate::plot::types::Scale;
     
     // Generate data spanning multiple orders of magnitude
-    let x = range!(1.0 => 1000.0, 100);                    // x ∈ [1, 1000]
+    let _x = range!(1.0 => 1000.0, 100);                    // x ∈ [1, 1000]
     
     // Create sample data vectors manually for demonstration
     // Power law: y = x^2 (appears linear in log-log)

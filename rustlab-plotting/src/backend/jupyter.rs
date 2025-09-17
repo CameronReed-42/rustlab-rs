@@ -518,10 +518,12 @@ impl JupyterBackend {
         })
     }
 
+    #[allow(dead_code)]
     fn get_color(&self, color: &PlotColor) -> RGBColor {
         RGBColor(color.r, color.g, color.b)
     }
 
+    #[allow(dead_code)]
     fn get_line_style(&self, style: &LineStyle) -> ShapeStyle {
         match style {
             LineStyle::Solid => ShapeStyle::from(&BLACK).stroke_width(2),
@@ -647,7 +649,7 @@ where
             
             // Draw cell value if requested
             if heatmap_data.show_values && cell_width > 20 && cell_height > 20 {
-                let text_color = if value > (min_val + max_val) / 2.0 {
+                let _text_color = if value > (min_val + max_val) / 2.0 {
                     plotters::prelude::BLACK
                 } else {
                     plotters::prelude::WHITE
@@ -670,7 +672,7 @@ where
     
     // Draw title if present
     if let Some(ref title) = plot.config.title {
-        let text_color = plotters::prelude::RGBColor(
+        let _text_color = plotters::prelude::RGBColor(
             plot.config.theme.text_color.r,
             plot.config.theme.text_color.g,
             plot.config.theme.text_color.b

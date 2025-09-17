@@ -22,8 +22,8 @@
 //! ```
 
 use crate::{Result, PlottingError};
-use crate::plot::types::{Plot, PlotConfig, Color, HeatmapData};
-use crate::colormap::{ColorMap, ColorMapper};
+use crate::plot::types::{Plot, PlotConfig, HeatmapData};
+use crate::colormap::ColorMap;
 use rustlab_math::ArrayF64;
 
 /// Builder for creating heatmap visualizations

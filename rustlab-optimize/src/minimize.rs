@@ -312,6 +312,7 @@ pub struct MinimizeND<F> {
     initial: Option<Vec<f64>>,
     bounds: Option<(Vec<f64>, Vec<f64>)>,
     fixed_params: Option<Vec<(usize, f64)>>,  // (parameter_index, fixed_value)
+    couplings: Vec<crate::algorithms::ParameterCoupling>,
     algorithm: Option<Algorithm>,
     characteristics: Option<ProblemCharacteristics>,
     tolerance: f64,
@@ -328,6 +329,7 @@ where
             initial: None,
             bounds: None,
             fixed_params: None,
+            couplings: Vec::new(),
             algorithm: None,
             characteristics: None,
             tolerance: 1e-8,
@@ -457,6 +459,70 @@ where
         self
     }
 
+    /// Add linear coupling between parameters
+    ///
+    /// # Example
+    /// ```
+    /// use rustlab_optimize::minimize;
+    /// 
+    /// let result = minimize(|x| x[0].powi(2) + x[1].powi(2))
+    ///     .from(&[1.0, 2.0])
+    ///     .couple_linear(0, 1, 2.0, 1.0)  // x[1] = 2*x[0] + 1
+    ///     .solve()?;
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    pub fn couple_linear(mut self, independent: usize, dependent: usize, scale: f64, offset: f64) -> Self {
+        self.couplings.push(crate::algorithms::ParameterCoupling::Linear {
+            independent,
+            dependent,
+            scale,
+            offset,
+        });
+        self
+    }
+
+    /// Add ratio coupling between parameters
+    ///
+    /// # Example
+    /// ```
+    /// use rustlab_optimize::minimize;
+    /// 
+    /// let result = minimize(|x| x[0].powi(2) + x[1].powi(2))
+    ///     .from(&[1.0, 2.0])
+    ///     .couple_ratio(0, 1, 0.5)  // x[1] = 0.5 * x[0]
+    ///     .solve()?;
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    pub fn couple_ratio(mut self, independent: usize, dependent: usize, ratio: f64) -> Self {
+        self.couplings.push(crate::algorithms::ParameterCoupling::Linear {
+            independent,
+            dependent,
+            scale: ratio,
+            offset: 0.0,
+        });
+        self
+    }
+
+    /// Add sum constraint on parameters
+    ///
+    /// # Example
+    /// ```
+    /// use rustlab_optimize::minimize;
+    /// 
+    /// let result = minimize(|x| x[0].powi(2) + x[1].powi(2) + x[2].powi(2))
+    ///     .from(&[0.3, 0.3, 0.4])
+    ///     .couple_sum(&[0, 1, 2], 1.0)  // x[0] + x[1] + x[2] = 1
+    ///     .solve()?;
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    pub fn couple_sum(mut self, parameters: &[usize], total: f64) -> Self {
+        self.couplings.push(crate::algorithms::ParameterCoupling::SumConstraint {
+            parameters: parameters.to_vec(),
+            total,
+        });
+        self
+    }
+
     /// Set problem characteristics to guide algorithm selection
     pub fn with_characteristics(mut self, characteristics: ProblemCharacteristics) -> Self {
         self.characteristics = Some(characteristics);
@@ -525,6 +591,14 @@ where
         if let Some(fixed) = self.fixed_params {
             problem = problem.fix_parameters(&fixed);
         }
+        
+        // Apply parameter couplings
+        for coupling in self.couplings {
+            problem.parameter_couplings.push(coupling);
+        }
+        
+        // Validate parameter constraints for conflicts
+        problem.validate_parameter_constraints()?;
         
         // Set characteristics based on problem size
         let characteristics = if initial.len() > 1000 {

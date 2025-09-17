@@ -28,7 +28,6 @@ use crate::{Result, PlottingError};
 use crate::plot::types::{Plot, PlotConfig, Color};
 use crate::colormap::{ColorMap, ColorMapper};
 use rustlab_math::{VectorF64, ArrayF64};
-use contour::ContourBuilder as ExternalContourBuilder;
 
 /// Builder for creating contour plot visualizations
 pub struct ContourBuilder<'a> {
@@ -584,7 +583,7 @@ where
     let mut result = ArrayF64::zeros(rows, cols);
     for i in 0..rows {
         for j in 0..cols {
-            result.set(i, j, data[i * cols + j]);
+            let _ = result.set(i, j, data[i * cols + j]);
         }
     }
     result

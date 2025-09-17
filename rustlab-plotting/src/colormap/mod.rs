@@ -210,6 +210,7 @@ impl ColorMap {
 pub struct ColorMapper {
     colormap: ColorMap,
     min_val: f64,
+    #[allow(dead_code)]
     max_val: f64,
     range: f64,
 }

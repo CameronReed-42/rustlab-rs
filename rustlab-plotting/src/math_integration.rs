@@ -277,10 +277,10 @@ pub mod patterns {
     
     /// Plot vector field (2D)
     pub fn plot_vector_field<F>(
-        f: F,
-        x_range: (f64, f64),
-        y_range: (f64, f64),
-        grid_size: usize,
+        _f: F,
+        _x_range: (f64, f64),
+        _y_range: (f64, f64),
+        _grid_size: usize,
     ) -> Result<()>
     where
         F: Fn(f64, f64) -> (f64, f64)

@@ -110,16 +110,32 @@ pub mod prelude {
     pub use crate::plotting::plot::Scale;
     
     // Statistical functions (if available)
+    // Note: We don't re-export Result to avoid conflicts with optimization::Result
     #[cfg(feature = "stats")]
-    pub use crate::stats::prelude::*;
-    
+    pub use crate::stats::{
+        StatsError,
+        advanced::*,
+        correlation::*,
+        hypothesis::*,
+        normalization::*,
+        performance::*,
+    };
+
     // Linear algebra essentials (if available)
     #[cfg(feature = "linalg")]
     pub use crate::linalg::{decompositions, eigenvalues};
-    
+
     // Optimization (if available)
+    // Note: We don't re-export Result to avoid conflicts with stats::Result
     #[cfg(feature = "optimization")]
-    pub use crate::optimization::prelude::*;
+    pub use crate::optimization::{
+        minimize, minimize_1d, minimize_2d, least_squares, curve_fit,
+        fit, fit_linear, fit_exponential, fit_exponential_advanced, fit_polynomial, fit_sinusoidal,
+        OptimizationResult, Algorithm, Error,
+        LinearFit, ExponentialFit, PolynomialFit, SinusoidalFit,
+    };
+    #[cfg(feature = "optimization")]
+    pub use crate::optimization::prelude::{Bounds, BoundsTransformer};
     
     // Special functions (if available)
     #[cfg(feature = "special")]
